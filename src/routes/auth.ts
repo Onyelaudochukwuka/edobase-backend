@@ -1,11 +1,4 @@
-import express, {
-  Application,
-  Response,
-  Request,
-  NextFunction,
-  RouterOptions,
-  IRouter,
-} from "express";
+import express, { IRouter } from "express";
 import {
   forgotPassword,
   login,
@@ -20,15 +13,21 @@ const router: IRouter = express.Router();
 router.post(
   "/login",
   body("email").isEmail().withMessage("Please enter a valid email."),
-  body("password").trim().isLength({ min: 5 }),
+  body("password")
+    .trim()
+    .isLength({ min: 5 })
+    .withMessage("Password must be at least 5 characters long."),
   Validate,
   login
 );
 router.post(
   "/sign-up",
   body("email").isEmail().withMessage("Please enter a valid email."),
-  body("password").trim().isLength({ min: 5 }),
-  body("name").trim().not().isEmpty(),
+  body("password")
+    .trim()
+    .isLength({ min: 5 })
+    .withMessage("Password must be at least 5 characters long."),
+  body("name").trim().not().isEmpty().withMessage("Name is required."),
   Validate,
   signUp
 );
@@ -40,8 +39,11 @@ router.post(
 );
 router.post(
   "/reset-password",
-  body("user_id").trim().not().isEmpty(),
-  body("password").trim().isLength({ min: 5 }),
+  body("user_id").trim().not().isEmpty().withMessage("User ID is required."),
+  body("password")
+    .trim()
+    .isLength({ min: 5 })
+    .withMessage("Password must be at least 5 characters long."),
   Validate,
   resetPassword
 );
