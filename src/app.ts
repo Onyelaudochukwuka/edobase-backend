@@ -1,7 +1,9 @@
+ import express, { Application, Response, Request, NextFunction } from 'express';
 import bodyParser from "body-parser";
-import express, { Application, Response, Request, NextFunction } from 'express';
-import  indexRouter  from "./routes/index";
-import  usersRouter  from "./routes/users";
+
+// Import Routes
+import { admin, auth, post } from "./routes";
+
 const path = require('path');
 const createError = require('http-errors');
 const cookieParser = require('cookie-parser');
@@ -15,15 +17,25 @@ const Options = { limit: "10mb", extended: true };
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// add cookie parser
 app.use(cookieParser());
+
+// add cors
 app.use(cors());
+
+// add body parser
 app.use(bodyParser.json(Options));
 app.use(bodyParser.urlencoded(Options));
 
+// Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+// Define routes
+app.use('/admin', admin);
+app.use('/auth', auth);
+app.use('/post', post);
+
 
 // catch 404 and forward to error handler
 app.use(function(req: Request, res, next) {
@@ -42,4 +54,4 @@ app.use(function(err: any, req: Request, res: Response, next: NextFunction) {
   })
 });
 
-module.exports = app;
+export default app;
