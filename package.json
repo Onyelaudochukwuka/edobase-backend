@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node dist//bin/www.js",
-    "dev": "ts-node ./src/bin/www.ts",
+    "dev": "nodemon ./src/bin/www.ts",
     "build": "tsc -p ."
   },
   "dependencies": {
