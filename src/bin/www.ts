@@ -2,12 +2,16 @@
 
 /**
  * Module dependencies.
- */
-
-const application = require('../app');
+*/
+require('dotenv').config();
+import { ConnectOptions, connect, set } from "mongoose";
+import  application  from "../app";
 const debug = require('debug')('edobase-backend:server');
 const http = require('http');
-
+const uri = process.env.MONGODB_URI;
+if (!uri) {
+  throw new Error("uri missing");
+}
 /**
  * Get port from environment and store in Express.
  */
@@ -20,15 +24,16 @@ application.set('port', port);
  */
 
 const server = http.createServer(application);
-
+const options: ConnectOptions = {};
+set('strictQuery', true);
 /**
  * Listen on provided port, on all network interfaces.
  */
-
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
-
+connect(uri, options).then(() => {
+  server.listen(port);
+  server.on('error', onError);
+  server.on('listening', onListening);
+});
 /**
  * Normalize a port into a number, string, or false.
  */
