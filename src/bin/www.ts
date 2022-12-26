@@ -5,21 +5,21 @@
  */
 
 const application = require('../app');
-let debug = require('debug')('edobase-backend:server');
-let https = require('https');
+const debug = require('debug')('edobase-backend:server');
+const https = require('https');
 
 /**
  * Get port from environment and store in Express.
  */
 
-let port = normalizePort(process.env.PORT || '3000');
+const port = normalizePort(process.env.PORT || '3000');
 application.set('port', port);
 
 /**
  * Create HTTP server.
  */
 
-let server = https.createServer(application);
+const server = https.createServer(application);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -34,7 +34,7 @@ server.on('listening', onListening);
  */
 
 function normalizePort(val:string):boolean | string |  number {
-  let port = parseInt(val, 10);
+  const port = parseInt(val, 10);
 
   if (isNaN(port)) {
     // named pipe
@@ -58,7 +58,7 @@ function onError(error: any): Error | void {
     throw error;
   }
 
-  let bind = typeof port === 'string'
+  const bind = typeof port === 'string'
     ? 'Pipe ' + port
     : 'Port ' + port;
 
@@ -82,8 +82,8 @@ function onError(error: any): Error | void {
  */
 
 function onListening(): void {
-  let addr = server.address();
-  let bind = typeof addr === 'string'
+  const addr = server.address();
+  const bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
