@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node dist/index.js",
-    "dev": "ts-node ./src/index.ts",
+    "start": "node dist//bin/www.js",
+    "dev": "ts-node ./src/bin/www.ts",
     "build": "tsc -p ."
   },
   "dependencies": {
