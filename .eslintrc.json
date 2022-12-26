@@ -11,5 +11,28 @@
         "sourceType": "module"
     },
     "rules": {
+        "semi": ["error", "always"],
+        "indent": ["error", 4],
+        "no-unused-vars": ["error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }],
+        "no-useless-constructor": ["error", { "allowPublicOnlyConstructor": true }],
+        "no-use-before-define": ["error", { "functions": false, "classes": false, "variables": false }],
+        "no-undef": ["error", { "typeof": true }],
+        "no-prototype-builtins": ["error", { "allow": ["__proto__"] }],
+        "no-constant-condition": ["error", { "checkLoops": false }],
+        "no-empty": ["error", { "allowEmptyCatch": true }],
+        "no-async-promise-executor": ["error", { "allows": ["new Promise"] }],
+        "no-case-declarations": ["error", { "lexicalBindings": true }],
+        "no-irregular-whitespace": ["error", { "skipStrings": true, "skipComments": true, "skipRegExps": true, "skipTemplates": true }],
+        "no-mixed-spaces-and-tabs": ["error", "smart-tabs"],
+        "no-multiple-empty-lines": "off",
+        "no-trailing-spaces": ["error", { "skipBlankLines": true }],
+        "no-var": ["error"],
+        "no-void": ["error", { "allowAsStatement": true }],
+        "no-with": ["error"],
+        "no-whitespace-before-property": "off",
+        "no-throw-literal": ["error", { "allowEmptyThrow": true }],
+        "no-self-compare": ["error", { "allowComparingTwoLiterals": true }],
+        "no-return-assign": ["error", "always"],
+        "no-redeclare": ["error", { "builtinGlobals": true }]
     }
 }
