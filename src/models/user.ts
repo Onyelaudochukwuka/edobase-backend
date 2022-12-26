@@ -1,13 +1,15 @@
-import { Schema, model } from "mongoose";
-interface User {
+import { Schema, model, models } from "mongoose";
+export interface IUser {
   name: string;
   email: string;
   password: string;
   date: Date;
   gender?: string;
   image?: string;
+  id: string;
+  description?: string;
 }
-const userSchema = new Schema<User>({
+const userSchema = new Schema<IUser>({
   name: {
     type: String,
     required: false,
@@ -32,6 +34,13 @@ const userSchema = new Schema<User>({
     type: String,
     required: false,
   },
+  id: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: false,
+  },
 });
-
-export default model("User", userSchema);
+export default models.User || model("User", userSchema);
