@@ -6,7 +6,7 @@
 
 const application = require('../app');
 const debug = require('debug')('edobase-backend:server');
-const https = require('https');
+const http = require('http');
 
 /**
  * Get port from environment and store in Express.
@@ -19,7 +19,7 @@ application.set('port', port);
  * Create HTTP server.
  */
 
-const server = https.createServer(application);
+const server = http.createServer(application);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -83,6 +83,7 @@ function onError(error: any): Error | void {
 
 function onListening(): void {
   const addr = server.address();
+  console.log('\x1b[33m%s\x1b[0m','Server is running on port: ' + addr.port);
   const bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
