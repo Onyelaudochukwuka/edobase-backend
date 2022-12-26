@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-const app = require('../app');
+const application = require('../app');
 let debug = require('debug')('edobase-backend:server');
 let https = require('https');
 
@@ -13,13 +13,13 @@ let https = require('https');
  */
 
 let port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
+application.set('port', port);
 
 /**
  * Create HTTP server.
  */
 
-let server = https.createServer(app);
+let server = https.createServer(application);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -53,7 +53,7 @@ function normalizePort(val:string):boolean | string |  number {
  * Event listener for HTTP server "error" event.
  */
 
-function onError(error) {
+function onError(error: any): Error | void {
   if (error.syscall !== 'listen') {
     throw error;
   }
@@ -81,7 +81,7 @@ function onError(error) {
  * Event listener for HTTP server "listening" event.
  */
 
-function onListening() {
+function onListening(): void {
   let addr = server.address();
   let bind = typeof addr === 'string'
     ? 'pipe ' + addr
