@@ -12,6 +12,7 @@ interface Req extends Request {
     name?: string;
     user_id?: string;
   };
+  session?: any;
 }
 const login = async (req: Req, res: Response) => {
   const { email, password } = req.body;
@@ -26,11 +27,13 @@ const login = async (req: Req, res: Response) => {
   const token = jwt.sign({ userId: user.id }, jwtSecret || "", {
     expiresIn: "30d",
   });
+  req.session.token = token;
   res.json({ error: false, token, userId: user.id });
 };
 
 const signUp = async (req: Req, res: Response) => {
   let { email, password, name } = req.body;
+  console.log(req.session);
   const user = await User.findOne({
     email,
   });
