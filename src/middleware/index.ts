@@ -13,7 +13,7 @@ interface Req extends Request {
 const jwtSecret = process.env.JWT_SECRET;
 if (!jwtSecret) throw new Error("Secret hash is missing");
 
-function isAuthrorized(req: Req, res: Response, next: NextFunction) {
+function isAuthorized(req: Req, res: Response, next: NextFunction) {
   if (req.session) {
     verify(req.session.token, jwtSecret ?? '', (err: any, decoded: any) => {
       if (err) {
@@ -43,4 +43,4 @@ function Validate( req: Request, res: Response, next: NextFunction ) {
   }
 };
 
-export { Validate };
+export { Validate, isAuthorized };
