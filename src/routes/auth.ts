@@ -1,5 +1,6 @@
 import express, { IRouter } from "express";
 import {
+  completeSignUp,
   forgotPassword,
   login,
   resetPassword,
@@ -39,7 +40,7 @@ router.post(
 );
 router.post(
   "/reset-password",
-  body("user_id").trim().not().isEmpty().withMessage("User ID is required."),
+  body("client_id").trim().not().isEmpty().withMessage("User ID is required."),
   body("password")
     .trim()
     .isLength({ min: 5 })
@@ -47,5 +48,14 @@ router.post(
   Validate,
   resetPassword
 );
-
+router.post(
+  "/complete-sign-up",
+  body("client_id").trim().not().isEmpty().withMessage("User ID is required."),
+  body("gender").trim().not().isEmpty().withMessage("Gender is required."),
+  body("LGA").trim().not().isEmpty().withMessage("LGA is required."),
+  body("username").trim().not().isEmpty().withMessage("Username is required."),
+  body("phone").trim().not().isEmpty().withMessage("Phone is required."),
+  Validate,
+  completeSignUp
+);
 export default router;
