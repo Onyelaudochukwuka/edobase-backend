@@ -10,6 +10,8 @@ export interface IUser {
   id: string;
   description?: string;
   confirmed: boolean;
+  phone?: string;
+  LGA?: string;
 }
 const userSchema = new Schema<IUser>({
   name: {
@@ -47,6 +49,18 @@ const userSchema = new Schema<IUser>({
   confirmed: {
     type: Boolean,
     default: false,
-  }
+  },
+  phone: {
+    type: String,
+    required: false,
+  },
+  LGA: {
+    type: String,
+    required: false,
+  },
+  username: {
+    type: String,
+    required: false,
+  },
 });
 export default models.User || model("User", userSchema);
