@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express"
 import { verify } from "jsonwebtoken";
 import { validationResult } from "express-validator";
+import User from "../models/user";
 interface Req extends Request {
   body: {
     email: string;
@@ -13,15 +14,20 @@ interface Req extends Request {
 const jwtSecret = process.env.JWT_SECRET;
 if (!jwtSecret) throw new Error("Secret hash is missing");
 
-function isAuthorized(req: Req, res: Response, next: NextFunction) {
+async function isAuthorized(req: Req, res: Response, next: NextFunction) {
   if (req.session) {
-    verify(req.session.token, jwtSecret ?? '', (err: any, decoded: any) => {
+    verify(req.session.token, jwtSecret ?? '', async (err: any, decoded: any) => {
       if (err) {
-        res.status(401).send('Unauthorized')
+        res.status(401).json({ error: true, message: "Unauthorized" });
       }
       if (decoded) {
-        console.log(decoded)
-        next()
+        console.log(decoded.userId)
+        const user = await User.findOne({ id: decoded.userId });
+        if (user.confirmed) {
+          next()
+        } else {
+          res.status(401).json({ error: true, message: "Unauthorized" });
+        }
       }
     })
   } else {
