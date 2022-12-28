@@ -1,10 +1,13 @@
-require('dotenv').config();
+require("dotenv").config();
+import fetch from "node-fetch";
 import { createHmac } from "node:crypto";
 import nodemailer from "nodemailer";
 import aws from "@aws-sdk/client-ses";
 import { defaultProvider } from "@aws-sdk/credential-provider-node";
 const secret = process.env.SECRET_HASH;
 if (!secret) throw new Error("Secret hash is missing");
+const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
+if (!RAPIDAPI_KEY) throw new Error("Secret hash is missing");
 
 // create Nodemailer SES transporter
 let transporter = nodemailer.createTransport({
@@ -21,25 +24,49 @@ function hashing(str: string): string | false {
     return false;
   }
 }
+// `
+// <div style='padding: 0;background-color: #FFDE4E;display: grid;place-items: center;font-family: 'Chivo Mono', monospace;'>
+//   <h1 style='text-align: center;font-size: 35px;margin-bottom: 20px;'>Edobase</h1>
+//   <section style='background: white;width: 80%;margin: auto;height: fit-content;display: block;position: relative;padding: 25px;'>
+//     <p style='font-weight: 700'> Dear [Name],</p>
+//     <p>Thank you for signing up for our forum! We're excited to have you as a member of our community.<br />To complete your registration and activate your account, please click on the following link:</p>
+//     <div><a href=''>[Confirmation Link]</a></div>
+//     <div><code>The Link is valid for 24 hours <a href=''> Click here to generate another one</a></code></div>
+//     <p>Once you've clicked on the link, your account will be activated and you'll be able to start participating in discussions and connecting with other members.</p>
 
-function sendMail({ to, subject, text }: { to: string, subject: string, text: string }, callback: any): void {
-  transporter.sendMail(
-    {
-      from: "udochukwukaonyela@gmail.com",
-      to,
-      subject,
-      text,
+//     <p>Thank you for joining us, and we look forward to seeing you on the forum!</p>
+//   </section>
+// </div>
+// </body>
+//     `
+function sendMail(
+  { to, subject, value }: { to: string; subject: string; value: string },
+  callback: any
+): void {
+  const url = "https://rapidprod-sendgrid-v1.p.rapidapi.com/mail/send";
+  const data = {
+    personalizations: [
+      { to: [{ email: to }], subject: subject },
+    ],
+    from: { email: "udochukwukaonyela@gmail.com" },
+    content: [{ type: "text/html", value }],
+  };
+  const options = {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "X-RapidAPI-Key": RAPIDAPI_KEY ?? "",
+      "X-RapidAPI-Host": "rapidprod-sendgrid-v1.p.rapidapi.com",
     },
-    (err, info) => {
-      if (err) {
-        callback(true, err);
-      } else {
-        callback(false, info);
-      }
-    }
-  );
+    body: JSON.stringify(data),
+  };
+
+  fetch(url, options)
+    .then(() => callback(false, "Email sent successfully"))
+    .catch((err) => callback(true,"error:" + err));
 }
 
-const compare = (str: string, hash: string): boolean => hashing(str.toString()) === hash;
+const compare = (str: string, hash: string): boolean =>
+  hashing(str.toString()) === hash;
 
 export { hashing, compare, sendMail };
