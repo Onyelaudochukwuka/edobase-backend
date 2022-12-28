@@ -1,6 +1,7 @@
 import { Schema, model, models } from "mongoose";
 export interface IUser {
   name: string;
+  username?: string;
   email: string;
   password: string;
   date: Date;
@@ -8,6 +9,7 @@ export interface IUser {
   image?: string;
   id: string;
   description?: string;
+  confirmed: boolean;
 }
 const userSchema = new Schema<IUser>({
   name: {
@@ -24,7 +26,7 @@ const userSchema = new Schema<IUser>({
   },
   date: {
     type: Date,
-    default: Date.now,
+    default: Date.now(),
   },
   gender: {
     type: String,
@@ -42,5 +44,9 @@ const userSchema = new Schema<IUser>({
     type: String,
     required: false,
   },
+  confirmed: {
+    type: Boolean,
+    default: false,
+  }
 });
 export default models.User || model("User", userSchema);
