@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { compare, hashing, sendMail } from "../helpers";
 import { Request, Response } from "express";
 import User, { IUser } from "../models/user";
+import Pass from "../models/pass";
 const jwtSecret = process.env.JWT_SECRET;
 if (!jwtSecret) throw new Error("Secret hash is missing");
 interface Req extends Request {
@@ -51,18 +52,52 @@ const signUp = async (req: Req, res: Response) => {
       id
     });
     await newUser.save();
-    const token = jwt.sign({
-      userId: newUser
-    }, jwtSecret,
-      {
-        expiresIn: "30d"
-      }
-    );
-    res.status(201).json({ error: false, token, userId: newUser.id });
+    const confirmation_id = uuidv4();
+    const pass = new Pass({
+      user_id: id,
+      confirmation_id,
+    })
+    await pass.save();
+    // TODO send confirmation mail to email
+    sendMail({
+      to: email,
+      subject: "Password Reset",
+      value: `<div style='padding: 0;background-color: #FFDE4E;display: grid;place-items: center;font-family: 'Chivo Mono', monospace;'>
+  <h1 style='text-align: center;font-size: 35px;margin-bottom: 20px;'>Edobase</h1>
+  <section style='background: white;width: 80%;margin: auto;height: fit-content;display: block;position: relative;padding: 25px;'>
+    <p style='font-weight: 700'> Dear ${name},</p>
+    <p>Thank you for signing up for our forum! We're excited to have you as a member of our community.<br />To complete your registration and activate your account, please click on the following link:</p>
+    <div><a href=''>https://edobase.vercel.app/complete/client_id=${confirmation_id}}</a></div>
+    <div><code>The Link is valid for 24 hours <a href=''> Click here to generate another one</a></code></div>
+    <p>Once you've clicked on the link, your account will be activated and you'll be able to start participating in discussions and connecting with other members.</p>
+    <p>Thank you for joining us, and we look forward to seeing you on the forum!</p>
+  </section>
+</div>
+</body>`
+    },(err: any, info: any) => {
+  if (err) {
+    res.status(500).json({ error: true, message: "Something went wrong" });
+  }
+  else {
+    res.status(200).json({ error: false, message: "Check Your Email For A confirmation Link" });
+  }
+})
   } else {
     res.status(400).json({ error: true, message: "Something went wrong" });
   }
 };
+
+const complete = async (req: Req, res: Response) => {
+  const { client_id } = req.query;
+  const pass = await Pass.findOne({
+    user_id: client_id,
+  });
+  if (!pass) {
+    return res.status(400).json({ error: true, message: "User not found" });
+  } else {
+    
+  }
+}
 
 const forgotPassword = async (req: Req, res: Response) => {
   const { email } = req.body;
@@ -73,7 +108,21 @@ const forgotPassword = async (req: Req, res: Response) => {
     sendMail({
       to: email,
       subject: "Password Reset",
-      text: "I hope this message gets sent!",
+      value: `
+<div style='padding: 0;background-color: #FFDE4E;display: grid;place-items: center;font-family: 'Chivo Mono', monospace;'>
+  <h1 style='text-align: center;font-size: 35px;margin-bottom: 20px;'>Edobase</h1>
+  <section style='background: white;width: 80%;margin: auto;height: fit-content;display: block;position: relative;padding: 25px;'>
+    <p style='font-weight: 700'> Dear [Name],</p>
+    <p>Thank you for signing up for our forum! We're excited to have you as a member of our community.<br />To complete your registration and activate your account, please click on the following link:</p>
+    <div><a href=''>[Confirmation Link]</a></div>
+    <div><code>The Link is valid for 24 hours <a href=''> Click here to generate another one</a></code></div>
+    <p>Once you've clicked on the link, your account will be activated and you'll be able to start participating in discussions and connecting with other members.</p>
+
+    <p>Thank you for joining us, and we look forward to seeing you on the forum!</p>
+  </section>
+</div>
+</body>
+    ` 
     }, (err: any, info: any) => {
       if (err) {
         res.status(500).json({ error: true, message: "Something went wrong" });
