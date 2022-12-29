@@ -8,6 +8,7 @@ import { ConnectOptions, connect, set } from "mongoose";
 import  application  from "../app";
 const debug = require('debug')('edobase-backend:server');
 const http = require('http');
+export const io = require('socket.io')(http);
 const uri = process.env.MONGODB_URI;
 if (!uri) {
   throw new Error("uri missing");
