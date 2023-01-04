@@ -1,5 +1,4 @@
 require("dotenv").config();
-import fetch from "node-fetch";
 import { createHmac } from "node:crypto";
 import nodemailer from "nodemailer";
 import aws from "@aws-sdk/client-ses";
