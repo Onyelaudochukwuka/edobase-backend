@@ -3,6 +3,9 @@ import { createHmac } from "node:crypto";
 import nodemailer from "nodemailer";
 import aws from "@aws-sdk/client-ses";
 import { defaultProvider } from "@aws-sdk/credential-provider-node";
+import axios from "axios";
+import fetch from "node-fetch";
+const request = require("request");
 const secret = process.env.SECRET_HASH;
 if (!secret) throw new Error("Secret hash is missing");
 const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
@@ -61,8 +64,9 @@ function sendMail(
   };
 
   fetch(url, options)
-    .then(() => callback(false, "Email sent successfully"))
-    .catch((err) => callback(true,"error:" + err));
+    .then((res) => res.json())
+    .then((json) => callback(false, json))
+    .catch((err) => callback(true, err));
 }
 
 const compare = (str: string, hash: string): boolean =>
