@@ -9,14 +9,17 @@ interface Req extends Request {
     name?: string;
     user_id?: string;
   };
-  session?: any;
+
+  headers: {
+    authorization: string;
+  }
 }
 const jwtSecret = process.env.JWT_SECRET;
 if (!jwtSecret) throw new Error("Secret hash is missing");
 
 async function isAuthorized(req: Req, res: Response, next: NextFunction) {
-  if (req.session) {
-    verify(req.session.token, jwtSecret ?? '', async (err: any, decoded: any) => {
+  if (req.headers.authorization) {
+    verify(req.headers.authorization, jwtSecret ?? '', async (err: any, decoded: any) => {
       if (err) {
         res.status(401).json({ error: true, message: "Unauthorized" });
       }
