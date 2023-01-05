@@ -3,7 +3,7 @@ import { isAuthorized } from "../middleware";
 const router: IRouter = express.Router();
 
 /* GET home page. */
-router.get('/', isAuthorized, function (req: Request, res: Response , next: NextFunction) {
+router.get('/', function (req: Request, res: Response , next: NextFunction) {
   res.json({ title: 'Express' });
 });
 
