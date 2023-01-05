@@ -3,5 +3,5 @@ import { Validate, isAuthorized } from "../middleware";
 const router: IRouter = express.Router();
 
 /* GET home page. */
-router.post('/', isAuthorized, Validate);
+router.post('/', Validate);
 export default router;
