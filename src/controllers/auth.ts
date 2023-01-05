@@ -34,13 +34,11 @@ const login = async (req: Req, res: Response) => {
   const token = jwt.sign({ userId: user.id }, jwtSecret || "", {
     expiresIn: "30d",
   });
-  req.session.token = token;
   res.json({ error: false, token, userId: user.id });
 };
 
 const signUp = async (req: Req, res: Response) => {
   let { email, password, name } = req.body;
-  console.log(req.session);
   const user = await User.findOne({
     email,
   });
@@ -127,7 +125,6 @@ const completeSignUp = async (req: Req, res: Response) => {
           const token = jwt.sign({ userId: user.id }, jwtSecret || "", {
             expiresIn: "30d",
           });
-          req.session.token = token;
           return res
             .status(200)
             .json({ error: false, message: "Account Verified", token });
