@@ -3,7 +3,6 @@ import { createHmac } from "node:crypto";
 import nodemailer from "nodemailer";
 import aws from "@aws-sdk/client-ses";
 import { defaultProvider } from "@aws-sdk/credential-provider-node";
-import axios from "axios";
 import fetch from "node-fetch";
 const request = require("request");
 const secret = process.env.SECRET_HASH;
