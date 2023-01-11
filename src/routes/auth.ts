@@ -58,4 +58,9 @@ router.post(
   Validate,
   completeSignUp
 );
+
+// router.get(
+//   "/user-name",
+  
+// )
 export default router;
