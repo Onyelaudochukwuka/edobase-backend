@@ -4,6 +4,7 @@ import nodemailer from "nodemailer";
 import aws from "@aws-sdk/client-ses";
 import { defaultProvider } from "@aws-sdk/credential-provider-node";
 import fetch from "node-fetch";
+import axios from "axios";
 const request = require("request");
 const secret = process.env.SECRET_HASH;
 if (!secret) throw new Error("Secret hash is missing");
@@ -44,26 +45,50 @@ function sendMail(
   { to, subject, value }: { to: string; subject: string; value: string },
   callback: any
 ): void {
-  const url = "https://rapidprod-sendgrid-v1.p.rapidapi.com/mail/send";
-  const data = {
-    personalizations: [
-      { to: [{ email: to }], subject: subject },
-    ],
-    from: { email: "udochukwukaonyela@gmail.com" },
-    content: [{ type: "text/html", value }],
-  };
-  const options = {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "X-RapidAPI-Key": RAPIDAPI_KEY ?? "",
-      "X-RapidAPI-Host": "rapidprod-sendgrid-v1.p.rapidapi.com",
-    },
-    body: JSON.stringify(data),
-  };
+  // const url = "https://rapidprod-sendgrid-v1.p.rapidapi.com/mail/send";
+  // const data = {
+  //   personalizations: [
+  //     { to: [{ email: to }], subject: subject },
+  //   ],
+  //   from: { email: "udochukwukaonyela@gmail.com" },
+  //   content: [{ type: "text/html", value }],
+  // };
+  // const options = {
+  //   method: "POST",
+  //   headers: {
+  //     "content-type": "application/json",
+  //     "X-RapidAPI-Key": RAPIDAPI_KEY ?? "",
+  //     "X-RapidAPI-Host": "rapidprod-sendgrid-v1.p.rapidapi.com",
+  //   },
+  //   body: JSON.stringify(data),
+  // };
 
-  fetch(url, options)
-    .then((res) => res.json())
+  // fetch(url, options)
+  //   .then((res) => res.json())
+  //   .then((json) => callback(false, json))
+  //   .catch((err) => callback(true, err));
+  axios({
+    "method": "POST",
+    "url": "https://rapidprod-sendgrid-v1.p.rapidapi.com/mail/send",
+    "headers": {
+      "content-type": "application/json",
+      "x-rapidapi-host": "rapidprod-sendgrid-v1.p.rapidapi.com",
+      "x-rapidapi-key": RAPIDAPI_KEY ?? "",
+      "accept": "application/json",
+      "useQueryString": true
+    }, "data": {
+      "personalizations": [{
+        "to": [{
+          "email": to
+        }], "subject": subject
+      }], "from": {
+        "email": "udochukwukaonyela@gmail.com"
+      }, "content": [{
+        "type": "text/html",
+        value,
+      }]
+    }
+  })
     .then((json) => callback(false, json))
     .catch((err) => callback(true, err));
 }
