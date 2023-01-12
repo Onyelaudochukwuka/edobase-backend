@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-ses": "^3.238.0",
+    "axios": "^1.2.2",
     "body-parser": "^1.20.1",
     "cloudinary": "^1.33.0",
     "cookie-parser": "^1.4.6",
