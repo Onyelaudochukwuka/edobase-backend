@@ -13,14 +13,22 @@ export interface IPost {
   }[];
   comments: number;
   promoted?: boolean;
+  author: string
+  title: string
+  _id: string
 }
 const postSchema = new Schema<IPost>({
-    id: { type: String, required: true },
     date: { type: Date, required: true },
     content: { type: String, required: true },
+    title: { type: String, required: true },
     likes: { type: Number, required: true },
     views: { type: Number, required: true },
     dislikes: { type: Number, required: true },
+    author: {
+        type: String,
+        required: true,
+        ref: "User",
+    },
     reports: [
         {
             type: { type: String, required: true },
