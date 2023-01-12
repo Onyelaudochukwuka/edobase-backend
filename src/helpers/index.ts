@@ -12,19 +12,19 @@ const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
 if (!RAPIDAPI_KEY) throw new Error("Secret hash is missing");
 
 // create Nodemailer SES transporter
-let transporter = nodemailer.createTransport({
-  SES: { aws },
+const transporter = nodemailer.createTransport({
+    SES: { aws },
 });
 
 function hashing(str: string): string | false {
-  if (typeof str === "string" && str.length > 0) {
-    const hash = createHmac("sha256", secret || "")
-      .update(str)
-      .digest("hex");
-    return hash;
-  } else {
-    return false;
-  }
+    if (typeof str === "string" && str.length > 0) {
+        const hash = createHmac("sha256", secret || "")
+            .update(str)
+            .digest("hex");
+        return hash;
+    } else {
+        return false;
+    }
 }
 // `
 // <div style='padding: 0;background-color: #FFDE4E;display: grid;place-items: center;font-family: 'Chivo Mono', monospace;'>
@@ -42,58 +42,58 @@ function hashing(str: string): string | false {
 // </body>
 //     `
 function sendMail(
-  { to, subject, value }: { to: string; subject: string; value: string },
-  callback: any
+    { to, subject, value }: { to: string; subject: string; value: string },
+    callback: any
 ): void {
-  // const url = "https://rapidprod-sendgrid-v1.p.rapidapi.com/mail/send";
-  // const data = {
-  //   personalizations: [
-  //     { to: [{ email: to }], subject: subject },
-  //   ],
-  //   from: { email: "udochukwukaonyela@gmail.com" },
-  //   content: [{ type: "text/html", value }],
-  // };
-  // const options = {
-  //   method: "POST",
-  //   headers: {
-  //     "content-type": "application/json",
-  //     "X-RapidAPI-Key": RAPIDAPI_KEY ?? "",
-  //     "X-RapidAPI-Host": "rapidprod-sendgrid-v1.p.rapidapi.com",
-  //   },
-  //   body: JSON.stringify(data),
-  // };
+    // const url = "https://rapidprod-sendgrid-v1.p.rapidapi.com/mail/send";
+    // const data = {
+    //   personalizations: [
+    //     { to: [{ email: to }], subject: subject },
+    //   ],
+    //   from: { email: "udochukwukaonyela@gmail.com" },
+    //   content: [{ type: "text/html", value }],
+    // };
+    // const options = {
+    //   method: "POST",
+    //   headers: {
+    //     "content-type": "application/json",
+    //     "X-RapidAPI-Key": RAPIDAPI_KEY ?? "",
+    //     "X-RapidAPI-Host": "rapidprod-sendgrid-v1.p.rapidapi.com",
+    //   },
+    //   body: JSON.stringify(data),
+    // };
 
-  // fetch(url, options)
-  //   .then((res) => res.json())
-  //   .then((json) => callback(false, json))
-  //   .catch((err) => callback(true, err));
-  axios({
-    "method": "POST",
-    "url": "https://rapidprod-sendgrid-v1.p.rapidapi.com/mail/send",
-    "headers": {
-      "content-type": "application/json",
-      "x-rapidapi-host": "rapidprod-sendgrid-v1.p.rapidapi.com",
-      "x-rapidapi-key": RAPIDAPI_KEY ?? "",
-      "accept": "application/json",
-      "useQueryString": true
-    }, "data": {
-      "personalizations": [{
-        "to": [{
-          "email": to
-        }], "subject": subject
-      }], "from": {
-        "email": "udochukwukaonyela@gmail.com"
-      }, "content": [{
-        "type": "text/html",
-        value,
-      }]
-    }
-  })
-    .then((json) => callback(false, json))
-    .catch((err) => callback(true, err));
+    // fetch(url, options)
+    //   .then((res) => res.json())
+    //   .then((json) => callback(false, json))
+    //   .catch((err) => callback(true, err));
+    axios({
+        "method": "POST",
+        "url": "https://rapidprod-sendgrid-v1.p.rapidapi.com/mail/send",
+        "headers": {
+            "content-type": "application/json",
+            "x-rapidapi-host": "rapidprod-sendgrid-v1.p.rapidapi.com",
+            "x-rapidapi-key": RAPIDAPI_KEY ?? "",
+            "accept": "application/json",
+            "useQueryString": true
+        }, "data": {
+            "personalizations": [{
+                "to": [{
+                    "email": to
+                }], "subject": subject
+            }], "from": {
+                "email": "udochukwukaonyela@gmail.com"
+            }, "content": [{
+                "type": "text/html",
+                value,
+            }]
+        }
+    })
+        .then((json) => callback(false, json))
+        .catch((err) => callback(true, err));
 }
 
 const compare = (str: string, hash: string): boolean =>
-  hashing(str.toString()) === hash;
+    hashing(str.toString()) === hash;
 
 export { hashing, compare, sendMail };
