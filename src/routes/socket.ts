@@ -1,6 +1,6 @@
 import { io } from "../bin/www";
 import { Socket } from "socket.io";
-import Post from "../models/post";
+import { Post, Comments } from "../models";
 let count = 0;
 io.on('connection', (socket: Socket) => {
   console.log('a user connected');
@@ -8,6 +8,15 @@ io.on('connection', (socket: Socket) => {
   socket.on('disconnect', () => {
     console.log('user disconnected');
     count--;
+  });
+  socket.on('comments', (id: string) => {
+    Comments.find({ ref: id }).then((comments) => {
+      if (comments) {
+        console.log(comments);
+        io.emit('comments', comments);
+      }
+    }
+    );
   });
   socket.on('post-view', (msg: string) => {
     Post.findOneAndUpdate({ id: "1" }, { $inc: { views: 1 } }).then((post) => {
