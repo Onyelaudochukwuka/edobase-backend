@@ -29,7 +29,7 @@ const login = async (req: Req, res: Response) => {
   }
   const isMatch = await compare(password, user.password);
   if (!isMatch) {
-    return res.status(400).json({ error: true, message: "Incorrect password" });
+    return res.status(400).json({ error: true, message: "Incorrect Credentials" });
   }
   const token = jwt.sign({ userId: user.id }, jwtSecret || "", {
     expiresIn: "30d",
@@ -159,7 +159,7 @@ const forgotPassword = async (req: Req, res: Response) => {
   <section style='background: white;width: 80%;margin: auto;height: fit-content;display: block;position: relative;padding: 25px;'>
     <p style='font-weight: 700'> Dear [Name],</p>
     <p>Follow this <a>link</a> to reset your password</p>
-    <div><a href='${confirmation_id}'>${confirmation_id}"</a></div>
+    <div><a href='https://edobase.vercel.app/reset-password?client_id${confirmation_id}'>https://edobase.vercel.app/resetPassword?client_id${confirmation_id}"</a></div>
     <p>Thank you for joining us, and we look forward to seeing you on the forum!</p>
   </section>
 </div>
@@ -170,7 +170,7 @@ const forgotPassword = async (req: Req, res: Response) => {
         if (err) {
           res
             .status(500)
-            .json({ error: true, message: "Something went wrong" });
+            .json({ error: true, message: info.message });
         } else {
           res
             .status(200)
@@ -187,17 +187,17 @@ const resetPassword = async (req: Req, res: Response) => {
     confirmation_id: client_id,
   });
   if (!pass) {
-    return res.status(400).json({ error: true, message: "User not found 2" });
+    return res.status(400).json({ error: true, message: "Link Has Been Already Used" });
   } else {
-    pass.delete();
     if (pass.date < Date.now()) {
       return res.status(400).json({ error: true, message: "Link Expired" });
     } else {
       const user = await User.findOne({
         id: pass.user_id,
       });
+      pass.delete();
       if (!user) {
-        return res.status(400).json({ error: true, message: "User not found 1" });
+        return res.status(400).json({ error: true, message: "User not found" });
       } else {
         if (user.confirmed) {
           const hashedPassword = (await hashing(password)) as string;
