@@ -28,3 +28,5 @@ const commentSchema = new Schema<Comments>({
     },
   ],
 });
+
+export default models.Comments || model("Comments", commentSchema);
