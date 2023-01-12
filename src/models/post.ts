@@ -12,6 +12,7 @@ export interface IPost {
     frequency: number;
   }[];
   comments: number;
+  promoted?: boolean;
 }
 const postSchema = new Schema<IPost>({
   id: { type: String, required: true },
@@ -27,5 +28,9 @@ const postSchema = new Schema<IPost>({
       frequency: { type: Number, required: true },
     },
   ],
+  promoted: {
+    type: Boolean
+    , required: false
+  },
 });
 export default models.Post || model("Post", postSchema);
