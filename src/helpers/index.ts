@@ -1,20 +1,12 @@
-require("dotenv").config();
+/* eslint-disable @typescript-eslint/no-var-requires */
+import * as dotEnv from "dotenv";
 import { createHmac } from "node:crypto";
-import nodemailer from "nodemailer";
-import aws from "@aws-sdk/client-ses";
-import { defaultProvider } from "@aws-sdk/credential-provider-node";
-import fetch from "node-fetch";
 import axios from "axios";
-const request = require("request");
 const secret = process.env.SECRET_HASH;
 if (!secret) throw new Error("Secret hash is missing");
+dotEnv.config();
 const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
 if (!RAPIDAPI_KEY) throw new Error("Secret hash is missing");
-
-// create Nodemailer SES transporter
-const transporter = nodemailer.createTransport({
-    SES: { aws },
-});
 
 function hashing(str: string): string | false {
     if (typeof str === "string" && str.length > 0) {
@@ -45,28 +37,6 @@ function sendMail(
     { to, subject, value }: { to: string; subject: string; value: string },
     callback: any
 ): void {
-    // const url = "https://rapidprod-sendgrid-v1.p.rapidapi.com/mail/send";
-    // const data = {
-    //   personalizations: [
-    //     { to: [{ email: to }], subject: subject },
-    //   ],
-    //   from: { email: "udochukwukaonyela@gmail.com" },
-    //   content: [{ type: "text/html", value }],
-    // };
-    // const options = {
-    //   method: "POST",
-    //   headers: {
-    //     "content-type": "application/json",
-    //     "X-RapidAPI-Key": RAPIDAPI_KEY ?? "",
-    //     "X-RapidAPI-Host": "rapidprod-sendgrid-v1.p.rapidapi.com",
-    //   },
-    //   body: JSON.stringify(data),
-    // };
-
-    // fetch(url, options)
-    //   .then((res) => res.json())
-    //   .then((json) => callback(false, json))
-    //   .catch((err) => callback(true, err));
     axios({
         "method": "POST",
         "url": "https://rapidprod-sendgrid-v1.p.rapidapi.com/mail/send",
@@ -93,7 +63,7 @@ function sendMail(
         .catch((err) => callback(true, err));
 }
 
-const compare = (str: string, hash: string): boolean =>
-    hashing(str.toString()) === hash;
+const compare = (str: string, hash: string): boolean => hashing(str.toString()) === hash;
+
 
 export { hashing, compare, sendMail };
