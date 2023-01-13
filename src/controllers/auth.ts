@@ -50,7 +50,6 @@ const signUp = async (req: Req, res: Response) => {
     }
     const id: string = uuidv4();
     password = (await hashing(password)) as string;
-    console.log(id);
     if (password) {
         const newUser = new User({
             email,
@@ -111,7 +110,6 @@ const completeSignUp = async (req: Req, res: Response) => {
             if (!user) {
                 return res.status(400).json({ error: true, message: "User not found" });
             } else {
-                console.log(user.confirmed);
                 if (user.confirmed) {
                     return res
                         .status(400)
