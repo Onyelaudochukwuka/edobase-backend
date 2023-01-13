@@ -128,7 +128,7 @@ const completeSignUp = async (req: Req, res: Response) => {
                     });
                     return res
                         .status(200)
-                        .json({ error: false, message: "Account Verified", token });
+                        .json({ error: false, message: "Account Verified", token, userId: user.id });
                 }
             }
         }
