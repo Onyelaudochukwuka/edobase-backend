@@ -2,7 +2,7 @@ import express, { Application, Response, Request } from 'express';
 import bodyParser from "body-parser";
 
 // Import Routes
-import { admin, auth, post } from "./routes";
+import { admin, auth, post, user } from "./routes";
 
 import path from 'path';
 import createError from 'http-errors';
@@ -33,7 +33,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/admin', admin);
 app.use('/auth', auth);
 app.use('/post', post);
-
+app.use('/user', user);
 
 // catch 404 and forward to error handler
 app.use(function(req: Request, res, next) {
