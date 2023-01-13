@@ -1,10 +1,17 @@
 {
-    "parser": "@typescript-eslint/parser",
+  "env": {
+    "browser": false,
+    "es2021": true
+  },
+  "parser": "@typescript-eslint/parser",
   "extends": ["plugin:@typescript-eslint/recommended"],
   "parserOptions": { "ecmaVersion": 2018, "sourceType": "module" },
-    "rules": {
-        "semi": ["error", "always"],
-        "indent": ["error", 4],
-        "no-unused-vars": ["error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }]
-    }
+  "rules": {
+    "semi": ["error", "always"],
+    "indent": ["error", 4],
+    "no-unused-vars": [
+      "error",
+      { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }
+    ]
+  }
 }
