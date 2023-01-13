@@ -4,7 +4,6 @@ import { IUser, User } from "../models";
 
 const getUser = async (req: Request, res: Response) => {
     const { id } = req.params;
-    console.log(id);
     const user = await User.findOne(
         {
             id,
