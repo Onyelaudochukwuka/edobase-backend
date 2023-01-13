@@ -1,6 +1,6 @@
 import express, { IRouter } from 'express';
 import { getUser } from "../controllers/user";
-import { Validate } from "../middleware";
+import { Validate, isAuthorized } from "../middleware";
 import { param } from "express-validator";
 const router: IRouter = express.Router();
 
@@ -8,6 +8,7 @@ const router: IRouter = express.Router();
 router.get(
     '/get-user/:id',
     param('id').trim().not().isEmpty().withMessage("User ID is required."),
+    isAuthorized,
     Validate,
     getUser
 );
