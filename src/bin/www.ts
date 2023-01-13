@@ -3,11 +3,14 @@
 /**
  * Module dependencies.
 */
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 import { ConnectOptions, connect, set } from "mongoose";
 import  application  from "../app";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const debug = require('debug')('edobase-backend:server');
-const http = require('http');
+import http from 'http';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 export const io = require('socket.io')(http);
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -89,9 +92,14 @@ function onError(error: any): Error | void {
 
 function onListening(): void {
     const addr = server.address();
-    console.log('\x1b[33m%s\x1b[0m','Server is running on port: ' + addr.port);
+    if(typeof addr === 'string'){
+        console.log('\x1b[33m%s\x1b[0m','Server is running on port: ' + addr);
+    }
+    else{
+        console.log('\x1b[33m%s\x1b[0m','Server is running on port: ' + addr?.port);
+    }
     const bind = typeof addr === 'string'
         ? 'pipe ' + addr
-        : 'port ' + addr.port;
+        : 'port ' + addr?.port;
     debug('Listening on ' + bind);
 }
