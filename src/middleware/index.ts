@@ -2,13 +2,15 @@ import { NextFunction, Request, Response } from "express";
 import { verify } from "jsonwebtoken";
 import { validationResult } from "express-validator";
 import User from "../models/user";
-const jwtSecret = process.env.JWT_SECRET;
+const jwtSecret = process.env.JWT_SECRET ?? '';
 if (!jwtSecret) throw new Error("Secret hash is missing");
 
 async function isAuthorized(req: Request, res: Response, next: NextFunction) {
+    console.log(req.headers.authorization);
     if (req.headers.authorization) {
-        verify(req.headers.authorization, jwtSecret ?? '', async (err: any, decoded: any) => {
+        verify(req.headers.authorization.split(' ')[1], jwtSecret, async (err: any, decoded: any) => {
             if (err) {
+                console.log(err);
                 res.status(401).json({ error: true, message: "Unauthorized" });
             }
             if (decoded) {
