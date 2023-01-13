@@ -6,7 +6,6 @@ const jwtSecret = process.env.JWT_SECRET ?? '';
 if (!jwtSecret) throw new Error("Secret hash is missing");
 
 async function isAuthorized(req: Request, res: Response, next: NextFunction) {
-    console.log(req.headers.authorization);
     if (req.headers.authorization) {
         verify(req.headers.authorization.split(' ')[1], jwtSecret, async (err: any, decoded: any) => {
             if (err) {
@@ -14,7 +13,6 @@ async function isAuthorized(req: Request, res: Response, next: NextFunction) {
                 res.status(401).json({ error: true, message: "Unauthorized" });
             }
             if (decoded) {
-                console.log(decoded.userId);
                 const user = await User.findOne({ id: decoded.userId });
                 if (user.confirmed) {
                     next();
