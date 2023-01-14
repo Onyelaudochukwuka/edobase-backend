@@ -25,7 +25,7 @@ const create =  async (req: Request, res: Response) => {
         title,
         content,
         author,
-        topic,
+        topic: topic.toLowerCase(),
     });
     await post.save();
     console.log(post);
@@ -111,4 +111,27 @@ const getPost = (req: Request, res: Response) => {
             }
         });
 };
-export { home, create, update, getPost };
+
+const getCategory = (req: Request, res: Response) => {
+    const { category } = req.params;
+    Post.find({
+        topic: category,
+    })
+        .populate("author")
+        .exec((err: CallbackError, posts: any) => {
+            if (err) {
+                res.status(500).json({
+                    error: true,
+                    message: "Something went wrong",
+                });
+            } else {
+                res.status(200).json({
+                    error: false,
+                    message: "Posts fetched successfully",
+                    data: posts,
+                });
+            }
+        });
+};
+
+export { home, create, update, getPost, getCategory };
