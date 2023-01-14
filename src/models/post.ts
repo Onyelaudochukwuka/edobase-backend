@@ -1,4 +1,5 @@
-import { Schema, model, models } from "mongoose";
+import { ObjectId } from "mongodb";
+import { Schema, Types, model, models } from "mongoose";
 export interface IPost {
   date: Date;
   content: string;
@@ -10,7 +11,7 @@ export interface IPost {
     reason: string;
     frequency: number;
   }[];
-  comments: number;
+  comments: ObjectId[];
   promoted?: boolean;
   author: string
   title: string
@@ -25,6 +26,11 @@ const postSchema = new Schema<IPost>({
     likes: { type: Number, required: true, default: 0 },
     views: { type: Number, required: true, default: 0 },
     dislikes: { type: Number, required: true, default: 0 },
+    comments: {
+        type: [{
+            type: Types.ObjectId,
+            ref: "Comments"
+        }], },
     topic: {
         type: String,
         required: true,
