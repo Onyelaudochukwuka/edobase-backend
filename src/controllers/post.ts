@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { IPost, Post, User } from "../models";
 import { CallbackError, Error } from "mongoose";
-
+import fs from "fs";
 const home = (req: Request, res: Response) => {
     const posts = Post.find({
         promoted: true,
@@ -19,53 +19,59 @@ const home = (req: Request, res: Response) => {
     }
 };
 
-const create = (req: Request, res: Response) => {
-    const { title, content, author } = req.body;
-    const post = new Post({
+const create =  async (req: Request, res: Response) => {
+    const { title, content, author, topic } = req.body;
+    const post = await new Post({
         title,
         content,
         author,
+        topic,
     });
-    post.save((err: Error, post: IPost) => {
-        User.findOneAndUpdate(
-            {
-                id: author,
+    await post.save();
+    console.log(post);
+    User.findOneAndUpdate(
+        {
+            id: author,
+        },
+        {
+            $push: {
+                posts: post._id,
             },
-            {
-                $push: {
-                    posts: post._id,
-                },
-            },
-            (err: Error) => {
-                if (err) {
-                    res.status(500).json({
-                        error: true,
-                        message: "Something went wrong",
-                    });
-                } else {
-                    res.status(200).json({
-                        error: false,
-                        message: "Post created successfully",
-                        data: post,
-                    });
-                }
+        },
+        (err: Error) => {
+            if (err) {
+                res.status(500).json({
+                    error: true,
+                    message: "Something went wrong",
+                });
+            } else {
+                res.status(200).json({
+                    error: false,
+                    message: "Post created successfully",
+                    data: post,
+                });
             }
-        );
-    });
+        }
+    );
+    console.log(post);
 };
 
 const update = (req: Request, res: Response) => {
+    console.log(req.file, req.files);
+    const img = fs.readFileSync(req?.file ? req?.file.path : req?.body);
+    const encode_img = img.toString('base64');
+    const final_img = {
+        contentType: req.file?.mimetype,
+        image: Buffer.from(encode_img, 'base64')
+    };
     const { id } = req.params;
-    const { title, content, author, promoted } = req.body;
     Post.findOneAndUpdate(
         {
             _id: id,
         },
         {
-            title,
-            content,
-            author,
-            promoted,
+            promoted: true,
+            image: final_img,
         },
         (err: Error, post: IPost) => {
             if (err) {
