@@ -13,7 +13,7 @@ async function isAuthorized(req: Request, res: Response, next: NextFunction) {
                 res.status(401).json({ error: true, message: "Unauthorized" });
             }
             if (decoded) {
-                const user = await User.findOne({ id: decoded.userId });
+                const user = await User.findOne({ _id: decoded.userId });
                 if (user.confirmed) {
                     next();
                 } else {
