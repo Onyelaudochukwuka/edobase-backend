@@ -1,6 +1,5 @@
 import { Schema, model, models } from "mongoose";
 export interface IPost {
-  id: string;
   date: Date;
   content: string;
   likes: number;
@@ -15,30 +14,44 @@ export interface IPost {
   promoted?: boolean;
   author: string
   title: string
-  _id: string
+    image: string
+    topic: string
+
 }
 const postSchema = new Schema<IPost>({
-    date: { type: Date, required: true },
+    date: { type: Date, required: true, default: Date.now() },
     content: { type: String, required: true },
     title: { type: String, required: true },
-    likes: { type: Number, required: true },
-    views: { type: Number, required: true },
-    dislikes: { type: Number, required: true },
+    likes: { type: Number, required: true, default: 0 },
+    views: { type: Number, required: true, default: 0 },
+    dislikes: { type: Number, required: true, default: 0 },
+    topic: {
+        type: String,
+        required: true,
+    },
     author: {
         type: String,
         required: true,
         ref: "User",
     },
-    reports: [
-        {
-            type: { type: String, required: true },
-            reason: { type: String, required: true },
-            frequency: { type: Number, required: true },
-        },
-    ],
+    reports: {
+        type: [
+            {
+                type: { type: String, required: true },
+                reason: { type: String, required: true },
+                frequency: { type: Number, required: true },
+            },
+        ],
+        required: false,
+    },
     promoted: {
         type: Boolean
         , required: false
+    },
+    image: {
+        image: Buffer,
+        contentType: String,
+        required: false,
     },
 });
 export default models.Post || model("Post", postSchema);
