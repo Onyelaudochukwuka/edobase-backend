@@ -1,4 +1,4 @@
-import { Schema, model, models } from "mongoose";
+import { ObjectId, Schema, Types, model, models } from "mongoose";
 export interface IUser {
   name: string;
   username?: string;
@@ -7,12 +7,12 @@ export interface IUser {
   date: Date;
   gender?: string;
   image?: string;
-  id: string;
   description?: string;
   confirmed: boolean;
   phone?: string;
   LGA?: string;
-  posts: string[]
+    posts: ObjectId[]
+_id: ObjectId
 }
 const userSchema = new Schema<IUser>({
     name: {
@@ -36,12 +36,9 @@ const userSchema = new Schema<IUser>({
         required: false,
     },
     image: {
-        type: String,
+        data: Buffer,
+        contentType: String,
         required: false,
-    },
-    id: {
-        type: String,
-        required: true,
     },
     description: {
         type: String,
@@ -64,8 +61,10 @@ const userSchema = new Schema<IUser>({
         required: false,
     },
     posts: {
-        type: [String],
-        ref: "Post",
+        type: [{
+            type: Types.ObjectId,
+            ref: "Post"
+        }],
     },
 });
 export default models.User || model("User", userSchema);
