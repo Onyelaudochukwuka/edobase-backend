@@ -10,7 +10,20 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import cors from "cors";
 const app: Application = express();
-const Options = { limit: "10mb", extended: true };
+import multer from 'multer';
+const storage = multer.diskStorage({
+    destination: function (req: any, file: any, cb: any) {
+        console.log(file);
+        cb(null, __dirname);
+    },
+    filename: function (req: any, file: any, cb: any) {
+        cb(null, file.fieldname + '-' + Date.now());
+    }
+});
+
+export const upload = multer({ storage: storage });
+app.use(upload.single('file'));
+const Options = { limit: "50mb", extended: true };
 // view engine setup
 app.use(logger('dev'));
 app.use(express.json());
