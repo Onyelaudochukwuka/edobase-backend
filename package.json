@@ -12,6 +12,7 @@
   "dependencies": {
     "@aws-sdk/client-ses": "^3.238.0",
     "@types/morgan": "^1.9.4",
+    "@types/multer": "^1.4.7",
     "axios": "^1.2.2",
     "body-parser": "^1.20.1",
     "cloudinary": "^1.33.0",
@@ -27,6 +28,7 @@
     "mongodb": "^4.13.0",
     "mongoose": "^6.8.1",
     "morgan": "~1.9.1",
+    "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.8.0",
     "socket.io": "^4.5.4",
     "uuid": "^9.0.0"
