@@ -31,10 +31,10 @@ const login = async (req: Req, res: Response) => {
     if (!isMatch) {
         return res.status(400).json({ error: true, message: "Incorrect Credentials" });
     }
-    const token = jwt.sign({ userId: user.id }, jwtSecret || "", {
+    const token = jwt.sign({ userId: user._id }, jwtSecret || "", {
         expiresIn: "30d",
     });
-    res.json({ error: false, token, userId: user.id });
+    res.json({ error: false, token, userId: user._id });
 };
 
 const signUp = async (req: Req, res: Response) => {
@@ -48,20 +48,18 @@ const signUp = async (req: Req, res: Response) => {
             .status(400)
             .json({ error: true, message: "User already exists" });
     }
-    const id: string = uuidv4();
     password = (await hashing(password)) as string;
     if (password) {
         const newUser = new User({
             email,
             password,
             name,
-            id,
         });
         await newUser.save();
         const confirmation_id = uuidv4();
         const ONE_DAY = 24 * 60 * 60 * 1000;
         const pass = new Pass({
-            user_id: id,
+            user_id: newUser._id,
             confirmation_id,
             date: Date.now() + ONE_DAY,
         });
@@ -105,7 +103,7 @@ const completeSignUp = async (req: Req, res: Response) => {
             return res.status(400).json({ error: true, message: "Link Expired" });
         } else {
             const user = await User.findOne({
-                id: pass.user_id,
+                _id: pass.user_id,
             });
             if (!user) {
                 return res.status(400).json({ error: true, message: "User not found" });
@@ -121,12 +119,12 @@ const completeSignUp = async (req: Req, res: Response) => {
                     user.phone = phone;
                     user.confirmed = true;
                     await user.save();
-                    const token = jwt.sign({ userId: user.id }, jwtSecret || "", {
+                    const token = jwt.sign({ userId: user._id }, jwtSecret || "", {
                         expiresIn: "30d",
                     });
                     return res
                         .status(200)
-                        .json({ error: false, message: "Account Verified", token, userId: user.id });
+                        .json({ error: false, message: "Account Verified", token, userId: user._id });
                 }
             }
         }
@@ -143,7 +141,7 @@ const forgotPassword = async (req: Req, res: Response) => {
         const confirmation_id = uuidv4();
         const ONE_DAY = 24 * 60 * 60 * 1000;
         const pass = new Pass({
-            user_id: user.id,
+            user_id: user._id,
             confirmation_id,
             date: Date.now() + ONE_DAY,
         });
@@ -192,7 +190,7 @@ const resetPassword = async (req: Req, res: Response) => {
             return res.status(400).json({ error: true, message: "Link Expired" });
         } else {
             const user = await User.findOne({
-                id: pass.user_id,
+                _id: pass.user_id,
             });
             pass.delete();
             if (!user) {
