@@ -1,5 +1,5 @@
-import express, { Response, Request, NextFunction, IRouter } from 'express';
-import { Validate, isAuthorized } from "../middleware";
+import express, {  IRouter } from 'express';
+import { Validate } from "../middleware";
 const router: IRouter = express.Router();
 
 /* GET home page. */
