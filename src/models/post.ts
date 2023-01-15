@@ -1,5 +1,4 @@
-import { ObjectId } from "mongodb";
-import { Schema, Types, model, models } from "mongoose";
+import { ObjectId, Schema, Types, model, models } from "mongoose";
 export interface IPost {
   date: Date;
   content: string;
@@ -17,6 +16,7 @@ export interface IPost {
   title: string
     image: string
     topic: string
+    _id: ObjectId
 
 }
 const postSchema = new Schema<IPost>({
