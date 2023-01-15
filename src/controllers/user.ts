@@ -6,7 +6,7 @@ const getUser = async (req: Request, res: Response) => {
     const { id } = req.params;
     const user = await User.findOne(
         {
-            id,
+            _id: id,
         });
       
     if (!user) {
@@ -45,7 +45,7 @@ const deleteUser = async (req: Request, res: Response) => {
     const { id } = req.params;
     const user = await User.findOneAndDelete(
         {
-            id,
+            _id: id,
         },
         (err: Error, user: IUser) => {
             if (err) {
