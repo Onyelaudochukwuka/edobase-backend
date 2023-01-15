@@ -10,24 +10,43 @@ import  application  from "../app";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const debug = require('debug')('edobase-backend:server');
 import http from 'http';
+import startSocket from "../socket";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-export const io = require('socket.io')(http);
+const jwtSecret = process.env.JWT_SECRET ?? '';
+if (!jwtSecret) throw new Error("Secret hash is missing");
 const uri = process.env.MONGODB_URI;
 if (!uri) {
     throw new Error("uri missing");
 }
 /**
  * Get port from environment and store in Express.
- */
+*/
 
 const port = normalizePort(process.env.PORT || '4000');
 application.set('port', port);
+const server = http.createServer(application);
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+export const io = require('socket.io')(server, {
+    allowEIO3: true,
+    cors: {
+        origin: "*",
+        methods: ['GET', 'POST']
+    }
+});
+startSocket();
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const statusMonitor = require('express-status-monitor')({
+    websocket: io,
+});
+application.use(statusMonitor);
+application.get('/status', statusMonitor.pageRoute);
 
 /**
  * Create HTTP server.
- */
+*/
 
-const server = http.createServer(application);
+// eslint-disable-next-line no-var
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const options: ConnectOptions = {};
 set('strictQuery', true);
 /**
