@@ -22,6 +22,8 @@ const storage = multer.diskStorage({
 });
 
 export const upload = multer({ storage: storage });
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+
 app.use(upload.single('file'));
 const Options = { limit: "50mb", extended: true };
 // view engine setup
@@ -47,6 +49,7 @@ app.use('/admin', admin);
 app.use('/auth', auth);
 app.use('/post', post);
 app.use('/user', user);
+
 
 // catch 404 and forward to error handler
 app.use(function(req: Request, res, next) {
