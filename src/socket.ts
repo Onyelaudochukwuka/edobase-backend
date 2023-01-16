@@ -38,17 +38,19 @@ const startSocket = async () => {
             );
         });
         socket.on('post-view', (id: ObjectId) => {
-            if (isValidObjectId(id)) {
-                Post.findOneAndUpdate({ _id: id }, { $inc: { views: 1 } }).then((post) => {
-                    if (post) {
-                        console.log(post.views);
-                        io.emit(`${post._id}-views`, post.views);
-                    } else {
-                        io.emit('success', false);
-                    }
-                });
-            } else {
-                io.emit('success', false);
+            if (!connectedDevices.includes(socket.client.conn.remoteAddress)) {
+                if (isValidObjectId(id)) {
+                    Post.findOneAndUpdate({ _id: id }, { $inc: { views: 1 } }).then((post) => {
+                        if (post) {
+                            console.log(post.views);
+                            io.emit(`${post._id}-views`, post.views);
+                        } else {
+                            io.emit('success', false);
+                        }
+                    });
+                } else {
+                    io.emit('success', false);
+                }
             }
         });
         socket.on('post-like', (id: ObjectId) => {
