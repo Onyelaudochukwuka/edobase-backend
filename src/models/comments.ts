@@ -1,11 +1,13 @@
-import { Schema, model, models } from "mongoose";
+import { ObjectId, Schema, model, models } from "mongoose";
+import { ObjectId as Id } from "mongodb";
 interface Comments {
-  id: string;
+  _id: ObjectId;
   date: Date;
   content: string;
   likes: number;
   dislikes: number;
-  ref: string;
+  refPost: string;
+  author: ObjectId;
   reports: {
     type: string;
     reason: string;
@@ -14,12 +16,16 @@ interface Comments {
 }
 
 const commentSchema = new Schema<Comments>({
-    ref: { type: String, required: true },
-    id: { type: String, required: true },
+    refPost: { type: String, required: true },
     date: { type: Date, required: true },
     content: { type: String, required: true },
     likes: { type: Number, required: true },
     dislikes: { type: Number, required: true },
+    author: {
+        type: Id,
+        required: true,
+        ref: "User",
+    },
     reports: [
         {
             type: { type: String, required: true },
