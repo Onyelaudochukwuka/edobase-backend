@@ -35,7 +35,7 @@ const create =  async (req: Request, res: Response) => {
         },
         {
             $push: {
-                posts: post._id,
+                posts: { $each: [post._id], $position: 0 },
             },
         },
         (err: Error) => {
@@ -95,7 +95,13 @@ const getPost = (req: Request, res: Response) => {
     Post.findOne({
         _id: id,
     })
-        .populate("author")
+        .populate(["author", "comments"])
+        .populate({
+            path: "comments",
+            populate: {
+                path: "author",
+            },
+        })
         .exec((err: CallbackError, post: IPost) => {
             if (err) {
                 res.status(500).json({
@@ -117,6 +123,9 @@ const getCategory = (req: Request, res: Response) => {
     Post.find({
         topic: category,
     })
+        .sort({
+            date: -1,
+        })
         .populate("author")
         .exec((err: CallbackError, posts: any) => {
             if (err) {
