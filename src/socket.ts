@@ -1,6 +1,5 @@
 import { Socket } from "socket.io";
-import { Comments, IPost, Post, User } from "./models";
-import { verify } from "jsonwebtoken";
+import { Comments, IPost, Post } from "./models";
 import { ObjectId, isValidObjectId } from "mongoose";
 import { io } from "./bin/www";
 const jwtSecret = process.env.JWT_SECRET ?? '';
@@ -10,10 +9,14 @@ if (!jwtSecret) throw new Error("Secret hash is missing");
 const startSocket = async () => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     let count = 0;
+    const connectedDevices: string[] = [];
     console.log(count);
     io.on('connection', async (socket: Socket) => {
-        console.log(`⚡: ${socket.id} user just connected!`);
-        count++;
+        if (!connectedDevices.includes(socket.client.conn.remoteAddress)){
+            console.log(`⚡: ${socket.id} user just connected!`);
+            connectedDevices.push(socket.client.conn.remoteAddress);
+            count++;
+        }
         const postCount = await Post.find({});
         io.emit('connections', { users: count, posts: postCount.length });
         
@@ -68,38 +71,46 @@ const startSocket = async () => {
                 });
             }
         });
-        socket.on('post-comment', ({ id, comment, token }: { id: ObjectId, comment: string, token: string }) => {
-            verify(token, jwtSecret, async (err: any, decoded: any) => {
-                if (decoded) {
-                    const user = await User.findOne({ _id: decoded.userId });
-                    if (user.confirmed) {
-                        if (isValidObjectId(id)) {
-                            Post.findOne({ id: id }).then((post) => {
-                                if (post) {
-                                    Comments.create({
-                                        ref: post._id,
-                                        date: new Date(),
-                                        content: comment,
-                                        likes: 0,
-                                        dislikes: 0,
-                                        reports: []
-                                    }).then((comment) => {
-                                        if (comment) {
-                                            Post.findOneAndUpdate({ _id: post._id }, { $push: { comments: comment._id } }).then((post) => {
+        socket.on('post-comment', ({ id, comment, userId }: { id: ObjectId, comment: string, userId: string }) => {
+            console.log(id, comment, userId);
+            console.time('comment');
+            console.timeLog('comment');
+            if (isValidObjectId(id) && isValidObjectId(userId)) {
+                Post.findOne({ id: id }).then((post) => {
+                    if (post) {
+                        Comments.create({
+                            refPost: post._id,
+                            date: new Date(),
+                            content: comment,
+                            likes: 0,
+                            dislikes: 0,
+                            author: userId,
+                            reports: []
+                        }).then((comment) => {
+                            if (comment) {
+                                Post.findOneAndUpdate({ _id: post._id }, { $push: { comments: { $each: [comment._id], $position: 0 } } })
+                                    .then((post) => {
+                                        Post.findOne({ _id: post._id })
+                                            .populate('comments')
+                                            .populate({
+                                                path: "comments",
+                                                populate: {
+                                                    path: "author",
+                                                },
+                                            })
+                                            .exec((err, post: IPost) => {
                                                 if (post) {
                                                     console.log(post);
-                                                    io.emit('comment', post._id);
+                                                    io.emit(`${post._id}-comments`, post.comments);
                                                 }
                                             });
-                                        }
                                     });
-                                }
-                            });
-                        }
+                            }
+                        });
                     }
-                }
-            });
-
+                });
+            }
+            console.timeEnd('comment');
         });
         socket.on('get-comment', (id: ObjectId) => {
             if (isValidObjectId(id)) {
