@@ -2,9 +2,9 @@ import { ObjectId, Schema, Types, model, models } from "mongoose";
 export interface IPost {
   date: Date;
   content: string;
-  likes: number;
+  likes: string[];
   views: number;
-  dislikes: number;
+  dislikes: string[];
   reports: {
     type: string;
     reason: string;
@@ -23,9 +23,9 @@ const postSchema = new Schema<IPost>({
     date: { type: Date, required: true, default: Date.now() },
     content: { type: String, required: true },
     title: { type: String, required: true },
-    likes: { type: Number, required: true, default: 0 },
+    likes: { type: [String], required: true, default: [] },
     views: { type: Number, required: true, default: 0 },
-    dislikes: { type: Number, required: true, default: 0 },
+    dislikes: { type: [String], required: true, default: [] },
     comments: {
         type: [{
             type: Types.ObjectId,
