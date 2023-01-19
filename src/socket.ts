@@ -59,9 +59,10 @@ const startSocket = async () => {
             }
         });
         socket.on("post-like", ({ id, userId }: { id: ObjectId, userId: ObjectId }) => {
+            console.log(id, userId);
             if (isValidObjectId(id)) {
                 Post.findOneAndUpdate(
-                    { _id: id },
+                    { _id: id, likes: { $not: { $elemMatch: userId } } },
                     {
                         $push: {
                             likes: userId,
@@ -69,6 +70,7 @@ const startSocket = async () => {
                     },
                     { new: true },
                     (err, post) => {
+                        console.log(post);
                         if (post) {
                             console.log(post);
                             io.emit(`${post._id}-likes`, post.likes);
