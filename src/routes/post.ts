@@ -20,19 +20,16 @@ router.post('/create-post',
 router.post('/update/:id',
     param('id').trim().not().isEmpty().withMessage('ID is required.'),
     Validate,
-    isAuthorized,
     update,
 );
 router.get('/get-post/:id',
     param('id').trim().not().isEmpty().withMessage('ID is required.'),
     Validate,
-    isAuthorized,
     getPost,
 );
 router.get('/get-category/:category',
     param('category').trim().not().isEmpty().withMessage('ID is required.'),
     Validate,
-    isAuthorized,
     getCategory,
 );
 
