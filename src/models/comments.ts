@@ -4,10 +4,11 @@ interface Comments {
   _id: ObjectId;
   date: Date;
   content: string;
-  likes: number;
-  dislikes: number;
+  likes: string[];
+  dislikes: string[];
   refPost: string;
   author: ObjectId;
+  replyTo: ObjectId;
   reports: {
     type: string;
     reason: string;
@@ -17,22 +18,29 @@ interface Comments {
 
 const commentSchema = new Schema<Comments>({
     refPost: { type: String, required: true },
-    date: { type: Date, required: true },
+    date: { type: Date, required: true, default: Date.now() },
     content: { type: String, required: true },
-    likes: { type: Number, required: true },
-    dislikes: { type: Number, required: true },
+    likes: { type: [String], required: true, default: [] },
+    dislikes: { type: [String], required: true, default: [] },
+    replyTo: { type: String, required: false },
     author: {
         type: Id,
         required: true,
         ref: "User",
     },
-    reports: [
-        {
-            type: { type: String, required: true },
-            reason: { type: String, required: true },
-            frequency: { type: Number, required: true },
-        },
-    ],
+    reports: {
+        type: [
+            {
+                type: { type: String, required: true },
+                reason: { type: String, required: true },
+                frequency: { type: Number, required: true },
+            
+            },
+        
+        ],
+        required: false,
+        default: [],
+    }
 });
 
 export default models.Comments || model("Comments", commentSchema);
