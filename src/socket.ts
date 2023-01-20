@@ -40,29 +40,31 @@ const startSocket = async () => {
             });
         });
         socket.on("post-view", (id: ObjectId) => {
-            if (isValidObjectId(id)) {
-                Post.findOneAndUpdate(
-                    { _id: id },
-                    { $inc: { views: 1 } },
-                    { new: true },
-                    (err, post) => {
-                        if (post) {
-                            console.log(post.views);
-                            io.emit(`${post._id}-views`, post.views);
-                        } else {
-                            io.emit("success", false);
+            if (connectedDevices.includes(socket.client.conn.remoteAddress)) {
+                if (isValidObjectId(id)) {
+                    Post.findOneAndUpdate(
+                        { _id: id },
+                        { $inc: { views: 1 } },
+                        { new: true },
+                        (err, post) => {
+                            if (post) {
+                                console.log(post.views);
+                                io.emit(`${post._id}-views`, post.views);
+                            } else {
+                                io.emit("success", false);
+                            }
                         }
-                    }
-                );
-            } else {
-                io.emit("success", false);
+                    );
+                } else {
+                    io.emit("success", false);
+                }
             }
         });
         socket.on("post-like", ({ id, userId }: { id: ObjectId, userId: ObjectId }) => {
             console.log(id, userId);
             if (isValidObjectId(id)) {
                 Post.findOneAndUpdate(
-                    { _id: id, likes: { $not: { $elemMatch: userId } } },
+                    { _id: id, likes: { $not: { $in: [userId] } } },
                     {
                         $push: {
                             likes: userId,
@@ -82,7 +84,7 @@ const startSocket = async () => {
         socket.on("post-dislike", ({id, userId}: {id:ObjectId, userId: ObjectId}) => {
             if (isValidObjectId(id)) {
                 Post.findOneAndUpdate(
-                    { _id: id },
+                    { _id: id, likes: { $not: { $in: [userId] } } },
                     {
                         $push: {
                             likes: userId,
@@ -93,6 +95,46 @@ const startSocket = async () => {
                         if (post) {
                             console.log(post);
                             io.emit(`${post._id}-dislikes`, post.dislikes);
+                        }
+                    }
+                );
+            }
+        });
+        socket.on("comment-like", ({ id, userId }: { id: ObjectId, userId: ObjectId }) => {
+            console.log(id, userId);
+            if (isValidObjectId(id)) {
+                Comments.findOneAndUpdate(
+                    { _id: id, likes: { $not: { $in: [userId] } } },
+                    {
+                        $push: {
+                            likes: userId,
+                        },
+                    },
+                    { new: true },
+                    (err, comment) => {
+                        console.log(comment);
+                        if (comment) {
+                            console.log(comment);
+                            io.emit(`${comment._id}-likes`, comment.likes);
+                        }
+                    }
+                );
+            }
+        });
+        socket.on("comment-dislike", ({id, userId}: {id:ObjectId, userId: ObjectId}) => {
+            if (isValidObjectId(id)) {
+                Comments.findOneAndUpdate(
+                    { _id: id, likes: { $not: { $in: [userId] } } },
+                    {
+                        $push: {
+                            likes: userId,
+                        },
+                    },
+                    { new: true },
+                    (err, comments) => {
+                        if (comments) {
+                            console.log(comments);
+                            io.emit(`${comments._id}-dislikes`, comments.dislikes);
                         }
                     }
                 );
