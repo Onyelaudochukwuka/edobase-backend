@@ -84,10 +84,10 @@ const startSocket = async () => {
         socket.on("post-dislike", ({id, userId}: {id:ObjectId, userId: ObjectId}) => {
             if (isValidObjectId(id)) {
                 Post.findOneAndUpdate(
-                    { _id: id, likes: { $not: { $in: [userId] } } },
+                    { _id: id, dislikes: { $not: { $in: [userId] } } },
                     {
                         $push: {
-                            likes: userId,
+                            dislikes: userId,
                         },
                     },
                     { new: true },
@@ -121,13 +121,14 @@ const startSocket = async () => {
                 );
             }
         });
-        socket.on("comment-dislike", ({id, userId}: {id:ObjectId, userId: ObjectId}) => {
+        socket.on("comment-dislike", ({ id, userId }: { id: ObjectId, userId: ObjectId }) => {
+            console.log(id, userId);
             if (isValidObjectId(id)) {
                 Comments.findOneAndUpdate(
-                    { _id: id, likes: { $not: { $in: [userId] } } },
+                    { _id: id, dislikes: { $not: { $in: [userId] } } },
                     {
                         $push: {
-                            likes: userId,
+                            dislikes: userId,
                         },
                     },
                     { new: true },
@@ -159,12 +160,8 @@ const startSocket = async () => {
                         if (post) {
                             Comments.create({
                                 refPost: post._id,
-                                date: new Date(),
                                 content: comment,
-                                likes: 0,
-                                dislikes: 0,
                                 author: userId,
-                                reports: [],
                             }).then((comment) => {
                                 if (comment) {
                                     Post.findOneAndUpdate(
