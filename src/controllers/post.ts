@@ -109,11 +109,19 @@ const getPost = (req: Request, res: Response) => {
                     message: "Something went wrong",
                 });
             } else {
-                res.status(200).json({
-                    error: false,
-                    message: "Post fetched successfully",
-                    data: post,
-                });
+                if (!post) {
+                    res.status(404).json({
+                        error: true,
+                        message: "Post not found",
+                    });
+                }
+                else {
+                    res.status(200).json({
+                        error: false,
+                        message: "Post fetched successfully",
+                        data: post,
+                    });
+                }
             }
         });
 };
