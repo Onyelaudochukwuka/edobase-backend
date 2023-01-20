@@ -1,6 +1,6 @@
 import { Socket } from "socket.io";
-import { Comments, IPost, Post } from "./models";
-import { ObjectId, isValidObjectId } from "mongoose";
+import { Comments, IComments, IPost, Post } from "./models";
+import { CallbackError, MongooseError, ObjectId, isValidObjectId } from "mongoose";
 import { io } from "./bin/www";
 const jwtSecret = process.env.JWT_SECRET ?? "";
 if (!jwtSecret) throw new Error("Secret hash is missing");
@@ -141,6 +141,41 @@ const startSocket = async () => {
                 );
             }
         });
+        socket.on("comment-delete", ({ id, userId }: { id: ObjectId, userId: ObjectId }) => {
+            console.log(id, userId);
+            if (isValidObjectId(id)) {
+                Comments.findOneAndDelete(
+                    { _id: id, author: userId },
+                    (err: MongooseError, comments: IComments) => {
+                        if (!err) {
+                            Post.findOneAndUpdate(
+                                { _id: comments.refPost },
+                                { $pull: { comments: id } },
+                                { new: true },
+                            )
+                                .populate("comments")
+                                .populate({
+                                    path: "comments",
+                                    populate: {
+                                        path: "author",
+                                    },
+                                })
+                                .exec((err, post) => {
+                                    if (post) {
+                                        console.log(post);
+                                        io.emit(`${post._id}-comments`, post.comments);
+                                    }
+                                });
+                        }
+                        if (comments) {
+                            console.log(comments);
+                            io.emit(`${comments._id}-delete`, comments._id);
+                        }
+                    }
+                );
+            }
+        });
+            
         socket.on(
             "post-comment",
             ({
@@ -156,7 +191,7 @@ const startSocket = async () => {
                 console.time("comment");
                 console.timeLog("comment");
                 if (isValidObjectId(id) && isValidObjectId(userId)) {
-                    Post.findOne({ id: id }).then((post) => {
+                    Post.findOne({ _id: id }).then((post) => {
                         if (post) {
                             Comments.create({
                                 refPost: post._id,
@@ -194,6 +229,23 @@ const startSocket = async () => {
                 console.timeEnd("comment");
             }
         );
+        socket.on("post-delete", ({ id, userId }: { id: ObjectId, userId: ObjectId }) => {
+            console.log(id, userId);
+            if (isValidObjectId(id)) {
+                Post.deleteOne({ _id: id, author: userId }, (err: MongooseError) => {
+                    if (!err) {
+                        Comments.deleteMany({ refPost: id }, (err: MongooseError) => {
+                            if (!err) {
+                                io.emit(`${id}-delete`, id);
+                            }
+                        }
+                        );
+                    }
+                }
+                );
+            }
+        });
+
         socket.on("get-comment", (id: ObjectId) => {
             if (isValidObjectId(id)) {
                 Post.findOne({ id: id })
@@ -206,9 +258,9 @@ const startSocket = async () => {
                     });
             }
         });
-        socket.on("post-report", (obj: any) => {
+        socket.on("post-report", ({ id, obj }: { id: ObjectId, obj: any }) => {
             Post.findOneAndUpdate(
-                { id: "1" },
+                { _id: id },
                 { ...obj },
                 { new: true },
                 (err, post) => {
