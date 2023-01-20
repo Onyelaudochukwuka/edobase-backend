@@ -23,14 +23,17 @@ const postSchema = new Schema<IPost>({
     date: { type: Date, required: true, default: Date.now() },
     content: { type: String, required: true },
     title: { type: String, required: true },
-    likes: { type: [String], required: true, default: [] },
     views: { type: Number, required: true, default: 0 },
+    likes: { type: [String], required: true, default: [] },
     dislikes: { type: [String], required: true, default: [] },
     comments: {
         type: [{
             type: Types.ObjectId,
             ref: "Comments"
-        }], },
+        }],
+        required: true,
+        default: [],
+    },
     topic: {
         type: String,
         required: true,
@@ -49,6 +52,7 @@ const postSchema = new Schema<IPost>({
             },
         ],
         required: false,
+        default: [],
     },
     promoted: {
         type: Boolean
