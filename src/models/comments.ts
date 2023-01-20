@@ -1,6 +1,6 @@
 import { ObjectId, Schema, model, models } from "mongoose";
 import { ObjectId as Id } from "mongodb";
-interface Comments {
+export interface IComments {
   _id: ObjectId;
   date: Date;
   content: string;
@@ -16,7 +16,7 @@ interface Comments {
   } [];
 }
 
-const commentSchema = new Schema<Comments>({
+const commentSchema = new Schema<IComments>({
     refPost: { type: String, required: true },
     date: { type: Date, required: true, default: Date.now() },
     content: { type: String, required: true },
