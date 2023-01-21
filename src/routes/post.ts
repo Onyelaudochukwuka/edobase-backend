@@ -1,5 +1,5 @@
 import express, { IRouter } from 'express';
-import { create, getCategory, getPost, home, update } from "../controllers/post";
+import { create, getCategory, getPost, getRecent, getTrending, home, update } from "../controllers/post";
 import { body, param } from "express-validator";
 import { Validate, isAuthorized } from "../middleware";
 const router: IRouter = express.Router();
@@ -32,5 +32,7 @@ router.get('/get-category/:category',
     Validate,
     getCategory,
 );
+router.get('/trending', getTrending);
+router.get('/recent', getRecent);
 
 export default router;
