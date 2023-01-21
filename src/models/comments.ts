@@ -33,11 +33,10 @@ const commentSchema = new Schema<IComments>({
             {
                 type: { type: String, required: true },
                 reason: { type: String, required: true },
-                frequency: { type: Number, required: true },
             },
         
         ],
-        required: false,
+        required: true,
         default: [],
     }
 });
