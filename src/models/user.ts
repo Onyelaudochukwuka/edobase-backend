@@ -65,6 +65,8 @@ const userSchema = new Schema<IUser>({
             type: Types.ObjectId,
             ref: "Post"
         }],
+        required: true,
+        default: [],
     },
 });
 export default models.User || model("User", userSchema);
