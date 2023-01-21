@@ -31,7 +31,13 @@ const getUserDetails = async (req: Request, res: Response) => {
             _id: id,
         },
     )
-        .populate("post")
+        .populate("posts")
+        .populate({
+            path: "posts",
+            populate: {
+                path: "author",
+            },
+        })
         .exec((err: CallbackError, user: IPost) => {
             if (err) {
                 res.status(500).json({
