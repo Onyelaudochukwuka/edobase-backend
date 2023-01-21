@@ -9,12 +9,12 @@ if (!jwtSecret) throw new Error("Secret hash is missing");
 const startSocket = async () => {
     io.on("connection", async (socket: Socket) => {
         console.log(io.engine.clientsCount);
-            console.log(`⚡: ${socket.id} user just connected! ${socket.client.conn.remoteAddress}}`);
+        console.log(`⚡: ${socket.id} user just connected! ${socket.client.conn.remoteAddress}}`);
         const postCount = await Post.find({});
         io.emit("connections", { users: io.engine.clientsCount, posts: postCount.length });
 
         socket.on("disconnect", async () => {
-                console.log(`⚡: ${socket.id} user just disconnected!`);
+            console.log(`⚡: ${socket.id} user just disconnected!`);
         });
         socket.on("comments", (id: string) => {
             Comments.find({ ref: id }).then((comments) => {
@@ -25,23 +25,23 @@ const startSocket = async () => {
             });
         });
         socket.on("post-view", async (id: ObjectId) => {
-                if (isValidObjectId(id)) {
-                    Post.findOneAndUpdate(
-                        { _id: id },
-                        { $inc: { views: 1 } },
-                        { new: true },
-                        (err, post) => {
-                            if (post) {
-                                console.log(post.views);
-                                io.emit(`${post._id}-views`, post.views);
-                            } else {
-                                io.emit("success", false);
-                            }
+            if (isValidObjectId(id)) {
+                Post.findOneAndUpdate(
+                    { _id: id },
+                    { $inc: { views: 1 } },
+                    { new: true },
+                    (err, post) => {
+                        if (post) {
+                            console.log(post.views);
+                            io.emit(`${post._id}-views`, post.views);
+                        } else {
+                            io.emit("success", false);
                         }
-                    );
-                } else {
-                    io.emit("success", false);
-                }
+                    }
+                );
+            } else {
+                io.emit("success", false);
+            }
         });
         socket.on("post-like", ({ id, userId }: { id: ObjectId, userId: ObjectId }) => {
             console.log(id, userId);
@@ -244,12 +244,27 @@ const startSocket = async () => {
         socket.on("post-report", ({ id, obj }: { id: ObjectId, obj: any }) => {
             Post.findOneAndUpdate(
                 { _id: id },
-                { ...obj },
+                { $push: { reports: { $each: [obj], $position: 0 } } },
                 { new: true },
                 (err, post) => {
                     if (post) {
                         console.log(post);
-                        io.emit("chat message", post);
+                        io.emit(`${post._id}-reports`, post.reports);
+                    }
+                }
+            );
+        });
+        socket.on("comment-report", ({ id, obj }: { id: ObjectId, obj: any }) => {
+            Comments.findOneAndUpdate(
+                {
+                    _id: id,
+                },
+                { $push: { reports: { $each: [obj], $position: 0 } } },
+                { new: true },
+                (err, comment) => {
+                    if (comment) {
+                        console.log(comment);
+                        io.emit(`${comment._id}-reports`, comment.reports);
                     }
                 }
             );
