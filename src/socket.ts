@@ -1,35 +1,20 @@
 import { Socket } from "socket.io";
 import { Comments, IComments, IPost, Post } from "./models";
-import { CallbackError, MongooseError, ObjectId, isValidObjectId } from "mongoose";
+import { MongooseError, ObjectId, isValidObjectId} from "mongoose";
 import { io } from "./bin/www";
 const jwtSecret = process.env.JWT_SECRET ?? "";
 if (!jwtSecret) throw new Error("Secret hash is missing");
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const startSocket = async () => {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    let count = 0;
-    const connectedDevices: string[] = [];
-    console.log(count);
     io.on("connection", async (socket: Socket) => {
-        if (!connectedDevices.includes(socket.client.conn.remoteAddress)) {
-            console.log(`⚡: ${socket.id} user just connected!`);
-            connectedDevices.push(socket.client.conn.remoteAddress);
-            count = count + 1;
-        }
+        console.log(io.engine.clientsCount);
+            console.log(`⚡: ${socket.id} user just connected! ${socket.client.conn.remoteAddress}}`);
         const postCount = await Post.find({});
-        io.emit("connections", { users: count, posts: postCount.length });
+        io.emit("connections", { users: io.engine.clientsCount, posts: postCount.length });
 
-        socket.on("disconnect", () => {
-            if (!connectedDevices.includes(socket.client.conn.remoteAddress)) {
-                connectedDevices.splice(connectedDevices.indexOf(socket.client.conn.remoteAddress), 1);
-                console.log("user disconnected");
-                count--;
-            }
-        });
-        socket.on("get-connections", () => {
-            io.emit("connections", count);
-            console.log(count);
+        socket.on("disconnect", async () => {
+                console.log(`⚡: ${socket.id} user just disconnected!`);
         });
         socket.on("comments", (id: string) => {
             Comments.find({ ref: id }).then((comments) => {
@@ -39,8 +24,7 @@ const startSocket = async () => {
                 }
             });
         });
-        socket.on("post-view", (id: ObjectId) => {
-            if (connectedDevices.includes(socket.client.conn.remoteAddress)) {
+        socket.on("post-view", async (id: ObjectId) => {
                 if (isValidObjectId(id)) {
                     Post.findOneAndUpdate(
                         { _id: id },
@@ -58,7 +42,6 @@ const startSocket = async () => {
                 } else {
                     io.emit("success", false);
                 }
-            }
         });
         socket.on("post-like", ({ id, userId }: { id: ObjectId, userId: ObjectId }) => {
             console.log(id, userId);

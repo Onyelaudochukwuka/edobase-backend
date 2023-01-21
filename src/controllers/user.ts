@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { Request, Response } from "express";
-import { IUser, User } from "../models";
+import { IPost, IUser, User } from "../models";
+import { CallbackError } from "mongoose";
 
 const getUser = async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -21,8 +22,32 @@ const getUser = async (req: Request, res: Response) => {
             data: user,
         });
     }
-
 };
+
+const getUserDetails = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const user = await User.findOne(
+        {
+            _id: id,
+        },
+    )
+        .populate("post")
+        .exec((err: CallbackError, user: IPost) => {
+            if (err) {
+                res.status(500).json({
+                    error: true,
+                    message: "Something went wrong",
+                });
+            } else {
+                res.status(200).json({
+                    error: false,
+                    message: "User retrieved successfully",
+                    data: user,
+                });
+            }
+        });
+};
+
 
 const getUsers = async (req: Request, res: Response) => {
     const users = await User.find({}, (err: Error, users: IUser[]) => {
@@ -65,4 +90,4 @@ const deleteUser = async (req: Request, res: Response) => {
 };
 
 
-export { getUser, getUsers, deleteUser };
+export { getUser, getUsers, deleteUser, getUserDetails };
