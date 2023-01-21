@@ -31,7 +31,7 @@ const create = async (req: Request, res: Response) => {
     console.log(post);
     User.findOneAndUpdate(
         {
-            id: author,
+            _id: author,
         },
         {
             $push: {
@@ -125,7 +125,72 @@ const getPost = (req: Request, res: Response) => {
             }
         });
 };
-
+const getTrending = (req: Request, res: Response) => {
+    Post.find({
+        date: {
+            $gte: new Date(new Date().setDate(new Date().getDate() - 7)),
+        },
+    })
+        .sort({
+            likes: -1,
+        })
+        .populate("author")
+        .exec((err: CallbackError, posts: any) => {
+            if (err) {
+                res.status(500).json({
+                    error: true,
+                    message: "Something went wrong",
+                });
+            } else {
+                if (posts.length === 0 || !posts) {
+                    res.status(404).json({
+                        error: true,
+                        message: "Post not found",
+                    });
+                }
+                else {
+                    res.status(200).json({
+                        error: false,
+                        message: "Posts fetched successfully",
+                        data: posts,
+                    });
+                }
+            }
+        });
+};
+const getRecent = (req: Request, res: Response) => {
+    Post.find({
+        date: {
+            $gte: new Date(new Date().setDate(new Date().getDate() - 7)),
+        },
+    })
+        .sort({
+            date: -1,
+        })
+        .populate("author")
+        .exec((err: CallbackError, posts: any) => {
+            if (err) {
+                res.status(500).json({
+                    error: true,
+                    message: "Something went wrong",
+                });
+            } else {
+                if (posts.length === 0 || !posts) {
+                    res.status(404).json({
+                        error: true,
+                        message: "Post not found",
+                    });
+                }
+                else {
+                    res.status(200).json({
+                        error: false,
+                        message: "Posts fetched successfully",
+                        data: posts,
+                    });
+                }
+            }
+        });
+};
 const getCategory = (req: Request, res: Response) => {
     const { category } = req.params;
     Post.find({
@@ -159,5 +224,4 @@ const getCategory = (req: Request, res: Response) => {
             }
         });
 };
-
-export { home, create, update, getPost, getCategory };
+export { home, create, update, getPost, getCategory, getTrending, getRecent };
