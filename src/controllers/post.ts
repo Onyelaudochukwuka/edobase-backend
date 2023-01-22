@@ -224,4 +224,42 @@ const getCategory = (req: Request, res: Response) => {
             }
         });
 };
-export { home, create, update, getPost, getCategory, getTrending, getRecent };
+
+const getSearch = (req: Request, res: Response) => {
+    const { query } = req.params;
+    Post.find({
+        title: {
+            $regex: query,
+            $options: "i",
+        },
+    })
+        .sort({
+            date: -1,
+        })
+        .populate("author")
+        .exec((err: CallbackError, posts: any) => {
+            console.log(posts);
+            if (err) {
+                res.status(500).json({
+                    error: true,
+                    message: "Something went wrong",
+                });
+            } else {
+                if (posts.length === 0 || !posts) {
+                    res.status(404).json({
+                        error: true,
+                        message: "Post not found",
+                    });
+                }
+                else {
+                    res.status(200).json({
+                        error: false,
+                        message: "Posts fetched successfully",
+                        data: posts,
+                    });
+                }
+            }
+        });
+};
+
+export { home, create, update, getPost, getCategory, getTrending, getRecent, getSearch };
