@@ -126,6 +126,7 @@ const getPost = (req: Request, res: Response) => {
         });
 };
 const getTrending = (req: Request, res: Response) => {
+    const { limit, page } = req.query;
     Post.find({
         date: {
             $gte: new Date(new Date().setDate(new Date().getDate() - 7)),
@@ -134,6 +135,8 @@ const getTrending = (req: Request, res: Response) => {
         .sort({
             likes: -1,
         })
+        .limit(limit ? parseInt(limit as string) : 10)
+        .skip(page ? parseInt(page as string) * 10 : 0)
         .populate("author")
         .exec((err: CallbackError, posts: any) => {
             if (err) {
@@ -159,6 +162,7 @@ const getTrending = (req: Request, res: Response) => {
         });
 };
 const getRecent = (req: Request, res: Response) => {
+    const { limit, page } = req.query;
     Post.find({
         date: {
             $gte: new Date(new Date().setDate(new Date().getDate() - 7)),
@@ -167,6 +171,8 @@ const getRecent = (req: Request, res: Response) => {
         .sort({
             date: -1,
         })
+        .limit(limit ? parseInt(limit as string) : 10)
+        .skip(page ? parseInt(page as string) * 10 : 0)
         .populate("author")
         .exec((err: CallbackError, posts: any) => {
             if (err) {
@@ -193,12 +199,15 @@ const getRecent = (req: Request, res: Response) => {
 };
 const getCategory = (req: Request, res: Response) => {
     const { category } = req.params;
+    const { limit, page } = req.query;
     Post.find({
         topic: category,
     })
         .sort({
             date: -1,
         })
+        .limit(limit ? parseInt(limit as string) : 10)
+        .skip(page ? parseInt(page as string) * 10 : 0)
         .populate("author")
         .exec((err: CallbackError, posts: any) => {
             console.log(posts);
@@ -227,6 +236,7 @@ const getCategory = (req: Request, res: Response) => {
 
 const getSearch = (req: Request, res: Response) => {
     const { query } = req.params;
+    const { limit, page } = req.query;
     Post.find({
         title: {
             $regex: query,
@@ -236,6 +246,8 @@ const getSearch = (req: Request, res: Response) => {
         .sort({
             date: -1,
         })
+        .limit(limit ? parseInt(limit as string) : 10)
+        .skip(page ? parseInt(page as string) * 10 : 0)
         .populate("author")
         .exec((err: CallbackError, posts: any) => {
             console.log(posts);
