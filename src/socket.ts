@@ -186,7 +186,7 @@ const startSocket = async () => {
                                         { _id: post._id },
                                         {
                                             $push: {
-                                                comments: { $each: [comment._id], $position: 0 },
+                                                comments:  comment._id ,
                                             },
                                         },
                                         { new: true }
