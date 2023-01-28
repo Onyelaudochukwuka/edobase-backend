@@ -18,6 +18,7 @@ interface Req extends Request {
     gender?: string;
     description?: string;
     username?: string;
+    bio?: string;
   };
   session?: any;
 }
@@ -29,7 +30,9 @@ const login = async (req: Req, res: Response) => {
     }
     const isMatch = await compare(password, user.password);
     if (!isMatch) {
-        return res.status(400).json({ error: true, message: "Incorrect Credentials" });
+        return res
+            .status(400)
+            .json({ error: true, message: "Incorrect Credentials" });
     }
     const token = jwt.sign({ userId: user._id }, jwtSecret || "", {
         expiresIn: "30d",
@@ -68,7 +71,14 @@ const signUp = async (req: Req, res: Response) => {
             {
                 to: email,
                 subject: "Password Reset",
-                value: "<div style='padding: 0;background-color: #FFDE4E;display: grid;place-items: center;font-family: 'Chivo Mono', monospace;'><h1 style='text-align: center;font-size: 35px;margin-bottom: 20px;'>Edobase</h1><section style='background: white;width: 80%;margin: auto;height: fit-content;display: block;position: relative;padding: 25px;'><p style='font-weight: 700'> Dear " + name + ",</p><p>Thank you for signing up for our forum! We're excited to have you as a member of our community.<br />To complete your registration and activate your account, please click on the following link:</p><div><a href='https://edobase.vercel.app/complete?client_id="+ confirmation_id +"'>https://edobase.vercel.app/complete?client_id=" + confirmation_id + "</a></div><div><code>The Link is valid for 24 hours <a href=''> Click here to generate another one</a></code></div><p>Once you've clicked on the link, your account will be activated and you'll be able to start participating in discussions and connecting with other members.</p><p>Thank you for joining us, and we look forward to seeing you on the forum!</p></section></div></body>",
+                value:
+          "<div style='padding: 0;background-color: #FFDE4E;display: grid;place-items: center;font-family: 'Chivo Mono', monospace;'><h1 style='text-align: center;font-size: 35px;margin-bottom: 20px;'>Edobase</h1><section style='background: white;width: 80%;margin: auto;height: fit-content;display: block;position: relative;padding: 25px;'><p style='font-weight: 700'> Dear " +
+          name +
+          ",</p><p>Thank you for signing up for our forum! We're excited to have you as a member of our community.<br />To complete your registration and activate your account, please click on the following link:</p><div><a href='https://edobase.vercel.app/complete?client_id=" +
+          confirmation_id +
+          "'>https://edobase.vercel.app/complete?client_id=" +
+          confirmation_id +
+          "</a></div><div><code>The Link is valid for 24 hours <a href=''> Click here to generate another one</a></code></div><p>Once you've clicked on the link, your account will be activated and you'll be able to start participating in discussions and connecting with other members.</p><p>Thank you for joining us, and we look forward to seeing you on the forum!</p></section></div></body>",
             },
             (err: any, info: any) => {
                 if (err) {
@@ -76,12 +86,10 @@ const signUp = async (req: Req, res: Response) => {
                         .status(500)
                         .json({ error: true, message: "Something went wrong" + info });
                 } else {
-                    res
-                        .status(200)
-                        .json({
-                            error: false,
-                            message: "Check Your Email For A confirmation Link",
-                        });
+                    res.status(200).json({
+                        error: false,
+                        message: "Check Your Email For A confirmation Link",
+                    });
                 }
             }
         );
@@ -91,7 +99,12 @@ const signUp = async (req: Req, res: Response) => {
 };
 
 const completeSignUp = async (req: Req, res: Response) => {
-    const { client_id, gender, LGA, username, phone } = req.body;
+    const { client_id, gender, LGA, username, phone, bio } = req.body;
+    Pass.find({ date: { $lt: Date.now() } }).then((data) => {
+        data.forEach((pass) => {
+            console.log(pass);
+        });
+    });
     const pass = await Pass.findOne({
         confirmation_id: client_id,
     });
@@ -118,13 +131,19 @@ const completeSignUp = async (req: Req, res: Response) => {
                     user.username = username;
                     user.phone = phone;
                     user.confirmed = true;
+                    user.bio = bio;
                     await user.save();
                     const token = jwt.sign({ userId: user._id }, jwtSecret || "", {
                         expiresIn: "30d",
                     });
                     return res
                         .status(200)
-                        .json({ error: false, message: "Account Verified", token, userId: user._id });
+                        .json({
+                            error: false,
+                            message: "Account Verified",
+                            token,
+                            userId: user._id,
+                        });
                 }
             }
         }
@@ -134,7 +153,7 @@ const completeSignUp = async (req: Req, res: Response) => {
 const forgotPassword = async (req: Req, res: Response) => {
     const { email } = req.body;
     const user = await User.findOne({ email });
-  
+
     if (!user) {
         return res.status(400).json({ error: true, message: "User not found" });
     } else {
@@ -165,9 +184,7 @@ const forgotPassword = async (req: Req, res: Response) => {
             },
             (err: any, info: any) => {
                 if (err) {
-                    res
-                        .status(500)
-                        .json({ error: true, message: info.message });
+                    res.status(500).json({ error: true, message: info.message });
                 } else {
                     res
                         .status(200)
@@ -184,7 +201,9 @@ const resetPassword = async (req: Req, res: Response) => {
         confirmation_id: client_id,
     });
     if (!pass) {
-        return res.status(400).json({ error: true, message: "Link Has Been Already Used" });
+        return res
+            .status(400)
+            .json({ error: true, message: "Link Has Been Already Used" });
     } else {
         if (pass.date < Date.now()) {
             return res.status(400).json({ error: true, message: "Link Expired" });
@@ -205,7 +224,9 @@ const resetPassword = async (req: Req, res: Response) => {
                             .status(200)
                             .json({ error: false, message: "Password reset successful" });
                     } else {
-                        res.status(400).json({ error: true, message: "Something went wrong" });
+                        res
+                            .status(400)
+                            .json({ error: true, message: "Something went wrong" });
                     }
                 } else {
                     return res
