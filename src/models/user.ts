@@ -11,8 +11,9 @@ export interface IUser {
   confirmed: boolean;
   phone?: string;
   LGA?: string;
-    posts: ObjectId[]
-_id: ObjectId
+  posts: ObjectId[];
+  _id: ObjectId;
+  bio?: string;
 }
 const userSchema = new Schema<IUser>({
     name: {
@@ -60,11 +61,17 @@ const userSchema = new Schema<IUser>({
         type: String,
         required: false,
     },
+    bio: {
+        type: String,
+        required: false,
+    },
     posts: {
-        type: [{
-            type: Types.ObjectId,
-            ref: "Post"
-        }],
+        type: [
+            {
+                type: Types.ObjectId,
+                ref: "Post",
+            },
+        ],
         required: true,
         default: [],
     },
