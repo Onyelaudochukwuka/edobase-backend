@@ -11,10 +11,11 @@ const startSocket = async () => {
         console.log(io.engine.clientsCount);
         console.log(`⚡: ${socket.id} user just connected! ${socket.client.conn.remoteAddress}}`);
         Views.findOne(
-            { date: { $gte: new Date(new Date().getTime() - 24 * 60 * 60 * 1000) } },
+            { reference: "views" },
             (err: MongooseError, views: IView) => {
                 if (views) {
-                    io.emit("views", views.views);
+                    console.log(views);
+                    io.emit("views", views?.views);
                 }
             }
         );
@@ -41,16 +42,18 @@ const startSocket = async () => {
                     }
                 });
                 Views.findOneAndUpdate(
-                    { date: { $gte: new Date(new Date().getTime() - 24 * 60 * 60 * 1000) } },
+                    { reference: "views" },
                     { $inc: { views: 1 } },
-                    { new: true, upsert: true },
+                    { new: true },
                     (err, views) => {
                         if (!views) {
                             const newViews = new Views({
+                                reference: "views",
                                 views: 1,
                                 date: new Date(),
                             });
                             newViews.save();
+                            io.emit("views", newViews.views);
                         }
                         if (views) {
                             io.emit("views", views.views);
