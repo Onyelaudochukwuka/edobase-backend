@@ -38,8 +38,11 @@ const startSocket = async () => {
                 Views.deleteMany({
                     date:
                     {
-                        $lt: new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
+                        $lt: Date.now() - 24 * 60 * 60 * 1000,
                     }
+                }).then(() => {
+                    console.log(new Date(Date.now() - 24 * 60 * 60 * 1000));
+                    console.log("Deleted");
                 });
                 Views.findOneAndUpdate(
                     { reference: "views" },
