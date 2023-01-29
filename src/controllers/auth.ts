@@ -29,7 +29,7 @@ const login = async (req: Req, res: Response) => {
         return res.status(400).json({ error: true, message: "User not found" });
     }
     const isMatch = await compare(password, user.password);
-    if (!isMatch) {
+    if (!isMatch) {    
         return res
             .status(400)
             .json({ error: true, message: "Incorrect Credentials" });
