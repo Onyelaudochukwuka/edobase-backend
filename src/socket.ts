@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { Comments, IComments, IPost, Post } from "./models";
+import { Comments, IComments, IPost, IView, Post, Views } from "./models";
 import { MongooseError, ObjectId, isValidObjectId} from "mongoose";
 import { io } from "./bin/www";
 const jwtSecret = process.env.JWT_SECRET ?? "";
@@ -10,6 +10,14 @@ const startSocket = async () => {
     io.on("connection", async (socket: Socket) => {
         console.log(io.engine.clientsCount);
         console.log(`⚡: ${socket.id} user just connected! ${socket.client.conn.remoteAddress}}`);
+        Views.findOne(
+            { date: { $gte: new Date(new Date().getTime() - 24 * 60 * 60 * 1000) } },
+            (err: MongooseError, views: IView) => {
+                if (views) {
+                    io.emit("views", views.views);
+                }
+            }
+        );
         const postCount = await Post.find({});
         io.emit("connections", { users: io.engine.clientsCount, posts: postCount.length });
 
@@ -26,6 +34,29 @@ const startSocket = async () => {
         });
         socket.on("post-view", async (id: ObjectId) => {
             if (isValidObjectId(id)) {
+                Views.deleteMany({
+                    date:
+                    {
+                        $lt: new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
+                    }
+                });
+                Views.findOneAndUpdate(
+                    { date: { $gte: new Date(new Date().getTime() - 24 * 60 * 60 * 1000) } },
+                    { $inc: { views: 1 } },
+                    { new: true, upsert: true },
+                    (err, views) => {
+                        if (!views) {
+                            const newViews = new Views({
+                                views: 1,
+                                date: new Date(),
+                            });
+                            newViews.save();
+                        }
+                        if (views) {
+                            io.emit("views", views.views);
+                        }
+                    }
+                );
                 Post.findOneAndUpdate(
                     { _id: id },
                     { $inc: { views: 1 } },
