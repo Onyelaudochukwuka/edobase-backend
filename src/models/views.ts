@@ -16,6 +16,7 @@ const viewSchema = new Schema<IView>({
     date: {
         type: Date,
         required: true,
+        default: Date.now(),
     }
 });
 export default models.Views || model("Views", viewSchema);
