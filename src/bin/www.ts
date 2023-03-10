@@ -39,7 +39,7 @@ const statusMonitor = require('express-status-monitor')({
     websocket: io,
 });
 application.use(statusMonitor);
-application.get('/status', statusMonitor.pageRoute);
+application.get('/', statusMonitor.pageRoute);
 
 /**
  * Create HTTP server.

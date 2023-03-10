@@ -1,0 +1,33 @@
+compile = "yarn build"
+run = "yarn start"
+entrypoint = "./"
+hidden = [".dist", ".config"]
+
+[packager]
+language = "nodejs"
+
+[packager.features]
+enabledForHosting = false
+packageSearch = true
+guessImports = true
+
+[env]
+XDG_CONFIG_HOME = "/home/runner/.config"
+MONGODB_URI="mongodb+srv://udoka:furthermaths$1@cluster0.p182c4a.mongodb.net/?retryWrites=true&w=majority"
+JWT_SECRET="a9d126ea0f0d5a7e11bb4b5e685bae5e107d27bec3411cf1a01bf799583afcd4f8bbdeb5a26ff5656f237c7ed19f34be447ed8dba3506d384978a5c4bcbe94eacf470a3744b651740a5715340dfda1dee926074af7c8f34ba7ae9be3d149d4979e5004785db163afa201a5b856d498f35f291467961080db2dd2919ec3d01db5"
+SECRET_HASH="a9d126ea0f0d5a7e11bb4b5e685bae5e107d27bec3411cf1a01bf799583afcd4f8bbdeb5a26ff5656f237c7ed19f34be447ed8dba3506d384978a5c4bcbe94eacf470a3744b651740a5715340dfda1dee926074af7c8f34ba7ae9be3d149d4979e5004785db163afa201a5b856d498f35f291467961080db2dd2919ec3d01db5"
+RAPIDAPI_KEY="9742a4362emsh155754582263755p16f285jsncf279c68b4a2"
+PASSWORD="furthermaths"
+[nix]
+channel = "stable-22_11"
+
+[gitHubImport]
+requiredFiles = [".replit", "replit.nix", ".config"]
+
+[languages]
+
+[languages.typescript]
+pattern = "**/{*.ts,*.js,*.tsx,*.jsx}"
+
+[languages.typescript.languageServer]
+start = "typescript-language-server --stdio"

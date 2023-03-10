@@ -33,7 +33,6 @@ app.use(express.urlencoded({ extended: false }));
 
 // add cookie parser
 app.use(cookieParser());
-
 // add cors
 app.use(cors());
 

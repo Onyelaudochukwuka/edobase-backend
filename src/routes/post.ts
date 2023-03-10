@@ -1,5 +1,5 @@
 import express, { IRouter } from 'express';
-import { create, getCategory, getPost, getRecent, getSearch, getTrending, home, update, DeletePost } from "../controllers/post";
+import { create, getCategory, getPost, getRecent, getSearch, getTrending, home, update } from "../controllers/post";
 import { body, param } from "express-validator";
 import { Validate, isAuthorized } from "../middleware";
 const router: IRouter = express.Router();
@@ -17,15 +17,10 @@ router.post('/create-post',
     create
 );
 
-router.get('/update/:id',
+router.post('/update/:id',
     param('id').trim().not().isEmpty().withMessage('ID is required.'),
     Validate,
     update,
-);
-router.get('/update/:id',
-    param('id').trim().not().isEmpty().withMessage('ID is required.'),
-    Validate,
-    DeletePost,
 );
 router.get('/get-post/:id',
     param('id').trim().not().isEmpty().withMessage('ID is required.'),
