@@ -70,7 +70,7 @@ const signUp = async (req: Req, res: Response) => {
         sendMail(
             {
                 to: email,
-                subject: "Password Reset",
+                subject: "Account SIgnup Confirmation",
                 value:
           "<div style='padding: 0;background-color: #FFDE4E;display: grid;place-items: center;font-family: 'Chivo Mono', monospace;'><h1 style='text-align: center;font-size: 35px;margin-bottom: 20px;'>Edobase</h1><section style='background: white;width: 80%;margin: auto;height: fit-content;display: block;position: relative;padding: 25px;'><p style='font-weight: 700'> Dear " +
           name +

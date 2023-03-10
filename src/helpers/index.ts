@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import * as dotEnv from "dotenv";
 import { createHmac } from "node:crypto";
-import axios from "axios";
+import nodemailer from 'nodemailer';
 const secret = process.env.SECRET_HASH;
 if (!secret) throw new Error("Secret hash is missing");
 dotEnv.config();
@@ -33,34 +33,37 @@ function hashing(str: string): string | false {
 // </div>
 // </body>
 //     `
-function sendMail(
+async function sendMail(
     { to, subject, value }: { to: string; subject: string; value: string },
     callback: any
-): void {
-    axios({
-        "method": "POST",
-        "url": "https://rapidprod-sendgrid-v1.p.rapidapi.com/mail/send",
-        "headers": {
-            "content-type": "application/json",
-            "x-rapidapi-host": "rapidprod-sendgrid-v1.p.rapidapi.com",
-            "x-rapidapi-key": RAPIDAPI_KEY ?? "",
-            "accept": "application/json",
-            "useQueryString": true
-        }, "data": {
-            "personalizations": [{
-                "to": [{
-                    "email": to
-                }], "subject": subject
-            }], "from": {
-                "email": "udochukwukaonyela@gmail.com"
-            }, "content": [{
-                "type": "text/html",
-                value,
-            }]
-        }
-    })
-        .then((json) => callback(false, json))
-        .catch((err) => callback(true, err));
+): Promise<void> {
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        host: 'smtp.gmail.com',
+        secure: false, // true for 465, false for other ports
+        auth: {
+            user: 'udochukwukaonyela@gmail.com',
+            pass: 'stlywgotalyzqlkq',
+        },
+        tls: {
+            rejectUnauthorized: false,
+        },
+    });
+
+    const info = await transporter.sendMail({
+        from: 'udochukwukaonyela@gmail.com',
+        to,
+        subject,
+        html: value,
+    });
+    console.log('Message sent: %s', info.messageId);
+
+    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+    if (info.messageId) {
+        callback(false, 'Success');
+    } else {
+        callback(true, 'Success');    
+    }
 }
 
 const compare = (str: string, hash: string): boolean => hashing(str.toString()) === hash;
