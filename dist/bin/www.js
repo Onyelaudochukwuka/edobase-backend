@@ -14,7 +14,7 @@ require('dotenv').config();
 const mongoose_1 = require("mongoose");
 const app_1 = __importDefault(require("../app"));
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const debug = require('debug')('edobase-backend:server');
+const debug = require('debug')('EdoBase-backend:server');
 const http_1 = __importDefault(require("http"));
 const socket_1 = __importDefault(require("../socket"));
 // eslint-disable-next-line @typescript-eslint/no-var-requires

@@ -20,7 +20,7 @@ function hashing(str: string): string | false {
 }
 // `
 // <div style='padding: 0;background-color: #FFDE4E;display: grid;place-items: center;font-family: 'Chivo Mono', monospace;'>
-//   <h1 style='text-align: center;font-size: 35px;margin-bottom: 20px;'>Edobase</h1>
+//   <h1 style='text-align: center;font-size: 35px;margin-bottom: 20px;'>EdoBase</h1>
 //   <section style='background: white;width: 80%;margin: auto;height: fit-content;display: block;position: relative;padding: 25px;'>
 //     <p style='font-weight: 700'> Dear [Name],</p>
 //     <p>Thank you for signing up for our forum! We're excited to have you as a member of our community.<br />To complete your registration and activate your account, please click on the following link:</p>

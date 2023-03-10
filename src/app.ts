@@ -25,7 +25,7 @@ export const upload = multer({ storage: storage });
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 
 app.use(upload.single('file'));
-const Options = { limit: "50mb", extended: true };
+const Options = { limit: "200mb", extended: true };
 // view engine setup
 app.use(logger('dev'));
 app.use(express.json());

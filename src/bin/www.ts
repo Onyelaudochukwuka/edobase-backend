@@ -8,7 +8,7 @@ require('dotenv').config();
 import { ConnectOptions, connect, set } from "mongoose";
 import  application  from "../app";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const debug = require('debug')('edobase-backend:server');
+const debug = require('debug')('EdoBase-backend:server');
 import http from 'http';
 import startSocket from "../socket";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
