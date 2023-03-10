@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { IPost, Post, User } from "../models";
 import { CallbackError, Error, MongooseError } from "mongoose";
-import fs from "fs";
 const home = (req: Request, res: Response) => {
     const posts = Post.find({
         promoted: true,
@@ -57,13 +56,6 @@ const create = async (req: Request, res: Response) => {
 };
 
 const update = (req: Request, res: Response) => {
-    console.log(req.file, req.files);
-    const img = fs.readFileSync(req?.file ? req?.file.path : req?.body);
-    const encode_img = img.toString("base64");
-    const final_img = {
-        contentType: req.file?.mimetype,
-        image: Buffer.from(encode_img, "base64"),
-    };
     const { id } = req.params;
     Post.findOneAndUpdate(
         {
@@ -71,7 +63,7 @@ const update = (req: Request, res: Response) => {
         },
         {
             promoted: true,
-            image: final_img,
+            image: '',
         },
         (err: MongooseError, post: IPost) => {
             if (err) {
@@ -90,6 +82,28 @@ const update = (req: Request, res: Response) => {
     );
 };
 
+const DeletePost = (req: Request, res: Response) => {
+    const { id } = req.params;
+    Post.findOneAndDelete(
+        {
+            _id: id,
+        },
+        (err: MongooseError, post: IPost) => {
+            if (err) {
+                res.status(500).json({
+                    error: true,
+                    message: "Something went wrong",
+                });
+            } else {
+                res.status(200).json({
+                    error: false,
+                    message: "Post deleted successfully",
+                    data: post,
+                });
+            }
+        }
+    );
+};
 const getPost = (req: Request, res: Response) => {
     const { id } = req.params;
     Post.findOne({
@@ -274,4 +288,4 @@ const getSearch = (req: Request, res: Response) => {
         });
 };
 
-export { home, create, update, getPost, getCategory, getTrending, getRecent, getSearch };
+export { home, create, update, getPost, getCategory, getTrending, getRecent, getSearch, DeletePost };
