@@ -42,8 +42,8 @@ async function sendMail(
         host: 'smtp.gmail.com',
         secure: false, // true for 465, false for other ports
         auth: {
-            user: 'udochukwukaonyela@gmail.com',
-            pass: 'stlywgotalyzqlkq',
+            user: 'superdevmax@gmail.com',
+            pass: 'qixrbhcsraffilpf',
         },
         tls: {
             rejectUnauthorized: false,
@@ -51,7 +51,7 @@ async function sendMail(
     });
 
     const info = await transporter.sendMail({
-        from: 'udochukwukaonyela@gmail.com',
+        from: 'superdevmax@gmail.com',
         to,
         subject,
         html: value,
