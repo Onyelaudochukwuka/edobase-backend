@@ -69,11 +69,11 @@ const signUp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         (0, helpers_1.sendMail)({
             to: email,
             subject: "Password Reset",
-            value: "<div style='padding: 0;background-color: #FFDE4E;display: grid;place-items: center;font-family: 'Chivo Mono', monospace;'><h1 style='text-align: center;font-size: 35px;margin-bottom: 20px;'>Edobase</h1><section style='background: white;width: 80%;margin: auto;height: fit-content;display: block;position: relative;padding: 25px;'><p style='font-weight: 700'> Dear " +
+            value: "<div style='padding: 0;background-color: #FFDE4E;display: grid;place-items: center;font-family: 'Chivo Mono', monospace;'><h1 style='text-align: center;font-size: 35px;margin-bottom: 20px;'>EdoBase</h1><section style='background: white;width: 80%;margin: auto;height: fit-content;display: block;position: relative;padding: 25px;'><p style='font-weight: 700'> Dear " +
                 name +
-                ",</p><p>Thank you for signing up for our forum! We're excited to have you as a member of our community.<br />To complete your registration and activate your account, please click on the following link:</p><div><a href='https://edobase.vercel.app/complete?client_id=" +
+                ",</p><p>Thank you for signing up for our forum! We're excited to have you as a member of our community.<br />To complete your registration and activate your account, please click on the following link:</p><div><a href='https:edobase.vercel.app/complete?client_id=" +
                 confirmation_id +
-                "'>https://edobase.vercel.app/complete?client_id=" +
+                "'>https:edobase.vercel.app/complete?client_id=" +
                 confirmation_id +
                 "</a></div><div><code>The Link is valid for 24 hours <a href=''> Click here to generate another one</a></code></div><p>Once you've clicked on the link, your account will be activated and you'll be able to start participating in discussions and connecting with other members.</p><p>Thank you for joining us, and we look forward to seeing you on the forum!</p></section></div></body>",
         }, (err, info) => {
@@ -171,11 +171,11 @@ const forgotPassword = (req, res) => __awaiter(void 0, void 0, void 0, function*
             subject: "Password Reset",
             value: `
 <div style='padding: 0;background-color: #FFDE4E;display: grid;place-items: center;font-family: 'Chivo Mono', monospace;'>
-  <h1 style='text-align: center;font-size: 35px;margin-bottom: 20px;'>Edobase</h1>
+  <h1 style='text-align: center;font-size: 35px;margin-bottom: 20px;'>EdoBase</h1>
   <section style='background: white;width: 80%;margin: auto;height: fit-content;display: block;position: relative;padding: 25px;'>
     <p style='font-weight: 700'> Dear [Name],</p>
     <p>Follow this <a>link</a> to reset your password</p>
-    <div><a href='https://edobase.vercel.app/reset-password?client_id${confirmation_id}'>https://edobase.vercel.app/resetPassword?client_id${confirmation_id}"</a></div>
+    <div><a href='https:edobase.vercel.app/reset-password?client_id${confirmation_id}'>https:edobase.vercel.app/resetPassword?client_id${confirmation_id}"</a></div>
     <p>Thank you for joining us, and we look forward to seeing you on the forum!</p>
   </section>
 </div>
