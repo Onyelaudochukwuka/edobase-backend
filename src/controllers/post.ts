@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { IPost, Post, User } from "../models";
 import { CallbackError, Error, MongooseError } from "mongoose";
-import fs from "fs";
 const home = (req: Request, res: Response) => {
     const posts = Post.find({
         promoted: true,
